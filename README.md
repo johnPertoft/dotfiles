@@ -9,3 +9,7 @@
 
    nix run .#switch-home
    ```
+4. ```
+   # Update inputs
+   nix flake update --commit-lock-file .
+   ```
