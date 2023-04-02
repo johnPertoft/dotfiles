@@ -119,6 +119,11 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.11"; # Did you read the comment?
 
+  nix.settings.substituters = [
+    "https://cuda-maintainers.cachix.org"
+    "https://nixpkgs-unfree.cachix.org"
+  ];
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   
