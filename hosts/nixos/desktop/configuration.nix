@@ -119,10 +119,10 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.11"; # Did you read the comment?
 
-  nix.settings.extra-substituters = [
-    "https://cuda-maintainers.cachix.org"
-    "https://nixpkgs-unfree.cachix.org"
-  ];
+  # nix.settings.extra-substituters = [
+  #   "https://cuda-maintainers.cachix.org"
+  #   "https://nixpkgs-unfree.cachix.org"
+  # ];
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -134,15 +134,15 @@
   hardware.nvidia.modesetting.enable = true;
   
   # Enable CUDA support.
-  nixpkgs.config.cudaSupport = true;
-  nixpkgs.config.cudnnSupport = true;
+  # nixpkgs.config.cudaSupport = true;
+  # nixpkgs.config.cudnnSupport = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim
-    cudatoolkit
-    cudaPackages.cudnn
+    # cudatoolkit
+    # cudaPackages.cudnn
   ];
   environment.variables = { EDITOR = "vim"; };
 
