@@ -89,19 +89,8 @@
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
       firefox
-    #  thunderbird
     ];
   };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -129,13 +118,28 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.11"; # Did you read the comment?
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
   
+  # Enable NVIDIA drivers.
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.opengl.enable = true;
-  #hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
-  #hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.vulkan_beta;
   hardware.nvidia.modesetting.enable = true;
+  
+  # Enable CUDA support.
+  nixpkgs.config.cudaSupport = true;
+  nixpkgs.config.cudnnSupport = true;
+
+  # List packages installed in system profile. To search, run:
+  # $ nix search wget
+  environment.systemPackages = with pkgs; [
+    vim
+    cudatoolkit
+    cudaPackages.cudnn
+  ];
+  environment.variables = { EDITOR = "vim"; };
 
   # Enable flatpak as fallback.
   services.flatpak.enable = true;
