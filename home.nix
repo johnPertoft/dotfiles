@@ -106,6 +106,10 @@
         push.autoSetupRemote = true;
       };
     };
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
     vscode = {
       enable = true;
       extensions = with pkgs.vscode-extensions; [
