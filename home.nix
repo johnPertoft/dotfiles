@@ -33,6 +33,7 @@
       coreutils-full
       curl
       discord
+      dive
       fantasque-sans-mono
       ffmpeg-full
       file
