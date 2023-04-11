@@ -141,4 +141,22 @@
       };
     };
   };
+  
+  # Hack to avoid VSCode complaining about non being able to write
+  # to the settings file.
+  # https://github.com/nix-community/home-manager/issues/1800#issuecomment-1059960604
+  home.activation.beforeCheckLinkTargets = {
+    after = [ ];
+    before = [ "checkLinkTargets" ];
+    data = ''
+      rm ~/.config/Code/User/settings.json
+    '';
+  };
+  home.activation.afterWriteBoundary = {
+    after = [ "writeBoundary" ];
+    before = [ ];
+    data = ''
+      cat ${(pkgs.formats.json {}).generate "settings.json" programs.vscode.userSettings} > ~/.config/Code/User/settings.json
+    '';
+  };
 }
