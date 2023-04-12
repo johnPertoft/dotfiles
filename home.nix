@@ -28,7 +28,7 @@
     };
     packages = with pkgs; [
       awscli
-      bazel
+      #bazel
       binutils
       coreutils-full
       curl
