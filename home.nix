@@ -114,6 +114,7 @@
     vscode = {
       enable = true;
       extensions = with pkgs.vscode-extensions; [
+        arrterian.nix-env-selector
         eamodio.gitlens
         github.copilot
         ms-azuretools.vscode-docker
