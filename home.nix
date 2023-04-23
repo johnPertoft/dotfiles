@@ -150,7 +150,7 @@
     after = [ ];
     before = [ "checkLinkTargets" ];
     data = ''
-      rm ~/.config/Code/User/settings.json
+      rm -f ~/.config/Code/User/settings.json
     '';
   };
   home.activation.afterWriteBoundary = {
