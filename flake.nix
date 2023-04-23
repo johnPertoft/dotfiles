@@ -21,6 +21,14 @@
             ./hosts/nixos/home-desktop/hardware-configuration.nix
           ]; 
         };
+
+        nixos-work = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/nixos/work-desktop/configuration.nix
+            ./hosts/nixos/work-desktop/hardware-configuration.nix
+          ];
+        };
       };
 
       homeConfigurations = {
