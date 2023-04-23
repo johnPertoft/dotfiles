@@ -157,6 +157,7 @@
     after = [ "writeBoundary" ];
     before = [ ];
     data = ''
+      mkdir -p ~/.config/Code/User
       cat ${(pkgs.formats.json {}).generate "settings.json" programs.vscode.userSettings} > ~/.config/Code/User/settings.json
     '';
   };
