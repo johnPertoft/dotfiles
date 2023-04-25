@@ -91,6 +91,13 @@
     "nixpkgs-unfree.cachix.org-1:hqvoInulhbV4nJ9yJOEr+4wxhDV4xq2d1DK7S6Nj6rs="
   ];
 
+  # Enable NVIDIA drivers.
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.opengl.enable = true;
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
+  hardware.nvidia.modesetting.enable = true;
+
+  # System packages.
   environment.systemPackages = with pkgs; [
     vim
     # cudatoolkit
