@@ -97,6 +97,10 @@
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.beta;
   hardware.nvidia.modesetting.enable = true;
 
+  # Enable CUDA support.
+  # nixpkgs.config.cudaSupport = true;
+  # nixpkgs.config.cudnnSupport = true;
+
   # System packages.
   environment.systemPackages = with pkgs; [
     vim
