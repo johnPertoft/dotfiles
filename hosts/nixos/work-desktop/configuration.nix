@@ -152,6 +152,8 @@
   ];
   environment.variables = { EDITOR = "vim"; };
 
+  services.udev.packages = with pkgs; [ gnome.gnome-settings-daemon ];
+
   # Enable flatpak as fallback.
   services.flatpak.enable = true;
 
