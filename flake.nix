@@ -17,7 +17,8 @@
         nixos = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
-            ./hosts/nixos/home-desktop/configuration.nix
+            ./hosts/nixos/common.nix
+            ./hosts/nixos/home-desktop/configuration-smol.nix
             ./hosts/nixos/home-desktop/hardware-configuration.nix
           ]; 
         };
@@ -25,6 +26,7 @@
         nixos-work = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
+            ./hosts/nixos/common.nix
             ./hosts/nixos/work-desktop/configuration.nix
             ./hosts/nixos/work-desktop/hardware-configuration.nix
           ];
