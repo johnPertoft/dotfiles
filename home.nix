@@ -23,7 +23,7 @@
     homeDirectory = "/home/john";
     sessionVariables = {
       EDITOR = "vim";
-      DOCKER_BUILDKIT = true;
+      DOCKER_BUILDKIT = 1;
       #LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:$LD_LIBRARY_PATH";
     };
     packages = with pkgs; [
