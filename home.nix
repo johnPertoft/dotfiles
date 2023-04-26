@@ -99,6 +99,8 @@
     };
     git = {
       enable = true;
+      userName = "John Pertoft";
+      userEmail = "john.pertoft@gmail.com";
       package = pkgs.gitFull;
       lfs.enable = true;
       extraConfig = {
