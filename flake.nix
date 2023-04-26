@@ -6,6 +6,8 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     home-manager = {
+      # TODO: Ok to use master?:)
+      # 22.11 seems to have some issues with fcitx something something.
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -36,7 +38,6 @@
       homeConfigurations = {
         "john@x86_64-linux" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs-unstable.legacyPackages.x86_64-linux;
-          #pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [ ./home.nix ];
         };
       };
