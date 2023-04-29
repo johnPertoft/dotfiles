@@ -20,7 +20,7 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/nixos/common.nix
-            ./hosts/nixos/home-desktop/configuration-smol.nix
+            ./hosts/nixos/home-desktop/configuration.nix
             ./hosts/nixos/home-desktop/hardware-configuration.nix
           ]; 
         };
