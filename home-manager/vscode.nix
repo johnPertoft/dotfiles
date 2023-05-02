@@ -5,6 +5,7 @@
       arrterian.nix-env-selector
       eamodio.gitlens
       github.copilot
+      matklad.rust-analyzer
       ms-azuretools.vscode-docker
       ms-python.python
       ms-python.vscode-pylance
