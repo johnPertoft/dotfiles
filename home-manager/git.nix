@@ -4,7 +4,6 @@
     package = pkgs.gitFull;
     userName = "John Pertoft";
     userEmail = "john.pertoft@gmail.com";
-    init.defaultBranch = "main";
     lfs = {
       enable = true;
       skipSmudge = true;
