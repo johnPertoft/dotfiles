@@ -7,7 +7,7 @@
 
   home = {
     stateVersion = "22.11";
-    userName = "john";
+    username = "john";
     homeDirectory = "/home/john";
     enableNixpkgsReleaseCheck = true;
     sessionVariables = {
