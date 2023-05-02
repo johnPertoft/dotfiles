@@ -94,4 +94,16 @@
       nix-direnv.enable = true;
     };
   };
+
+  nixpkgs.config = {
+    allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+      "discord"
+      "google-chrome"
+      "slack"
+      "spotify"
+      "steam"
+      "steam-original"
+      "zoom"
+    ];
+  };
 }
