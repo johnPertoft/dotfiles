@@ -11,7 +11,7 @@
     homeDirectory = "/home/john";
     enableNixpkgsReleaseCheck = true;
     sessionVariables = {
-      DOCKER_BUILDKIT = true;
+      DOCKER_BUILDKIT = 1;
       EDITOR = "vim";
     };
   };
