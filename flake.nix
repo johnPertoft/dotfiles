@@ -38,7 +38,7 @@
       homeConfigurations = {
         "john@x86_64-linux" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs-unstable.legacyPackages.x86_64-linux;
-          modules = [ ./home.nix ];
+          modules = [ ./home-manager/home.nix ];
         };
       };
     } // flake-utils.lib.eachDefaultSystem (system:
