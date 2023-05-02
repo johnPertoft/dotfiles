@@ -1,14 +1,4 @@
 { config, pkgs, lib, ... }: rec {
-  nixpkgs.config = {
-    allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "vscode"
-      "vscode-extension-github-copilot"
-      "vscode-extension-MS-python-vscode-pylance"
-      "vscode-extension-ms-vscode-remote-remote-ssh"
-      "vscode-extension-ms-vsliveshare-vsliveshare"
-    ];
-  };
-
   programs.vscode = {
     enable = true;
     extensions = with pkgs.vscode-extensions; [
