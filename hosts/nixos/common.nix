@@ -120,11 +120,14 @@
 
   # Enable Steam games.
   programs.steam.enable = true;
-  #nixpkgs.config.packageOverrides = pkgs: {
-  #  steam = pkgs.steam.override {
-  #    extraPkgs = pkgs: with pkgs; [
-  #      cargo
-  #    ];
-  #  };
-  #};
+  
+  # TODO: Put this somewhere else.
+  # To run ark-client we need cargo in the steam fhs environment.
+  nixpkgs.config.packageOverrides = pkgs: {
+    steam = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        cargo
+      ];
+    };
+  };
 }
