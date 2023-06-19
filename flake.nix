@@ -35,7 +35,8 @@
 
       homeConfigurations = {
         "john@x86_64-linux" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs-unstable.legacyPackages.x86_64-linux;
+          #pkgs = nixpkgs-unstable.legacyPackages.x86_64-linux;
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
           modules = [ ./home-manager/home.nix ];
         };
       };
