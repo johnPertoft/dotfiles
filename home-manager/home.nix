@@ -21,9 +21,6 @@
 
   fonts.fontconfig.enable = true;
 
-  # TODO: Set keybinds?
-  #dconf.settings = {}
-
   home.packages = with pkgs; [
     awscli
     bazel
@@ -66,7 +63,28 @@
     zip
     yarn
     zoom-us
-  ];
+  ] ++ (with pkgs.gnomeExtensions;
+    [
+      blur-my-shell
+      caffeine
+      night-theme-switcher
+      rounded-window-corners
+    ]);
+
+  # Use `dconf watch /` to track stateful changes you are doing, then set them here.
+  dconf.settings = {
+    "org/gnome/shell" = {
+      enabled-extensions = [
+        "appindicatorsupport@rgcjonas.gmail.com"
+        "apps-menu@gnome-shell-extensions.gcampax.github.com"
+        "blur-my-shell@aunetx"
+        "caffeine@patapon.info"
+        "nightthemeswitcher@romainvigier.fr"
+        "places-menu@gnome-shell-extensions.gcampax.github.com"
+        "rounded-window-corners@yilozt"
+      ];
+    };
+  };
 
   programs = {
     home-manager.enable = true;
