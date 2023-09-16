@@ -1,18 +1,17 @@
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: push
 
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Install Nix
-        uses: cachix/install-nix-action@v18
+        uses: DeterminateSystems/nix-installer-action@v5
+
+      - name: Show flake
+        run: nix flake show
+
       - name: Check flake evaluation
-        run: nix flake check
+        run: nix flake check --keep-going

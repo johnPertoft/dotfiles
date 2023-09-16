@@ -1,51 +1,65 @@
-{ config, pkgs, lib, ... }: {
-  imports = [
-    ./vscode.nix
-    ./vim.nix
-    ./git.nix
-  ];
-
-  home = {
-    stateVersion = "22.11";
-    username = "john";
-    homeDirectory = "/home/john";
-    enableNixpkgsReleaseCheck = true;
-    sessionVariables = {
-      DOCKER_BUILDKIT = 1;
-      EDITOR = "vim";
-    };
-  };
-
-  # TODO
-  # home.shellAliases = {}
-
-  fonts.fontconfig.enable = true;
-
+{ pkgs, lib, ... }: {
   home.packages = with pkgs; [
+    act
+    actionlint
     awscli
-    bazel
     binutils
+    black
+    buildah
+    buildkit
+    cachix
+    cmake
+    comma
     coreutils-full
     curl
-    discord
     dive
+    discord
+    docker-client
+    docker-slim
     fantasque-sans-mono
     ffmpeg-full
     file
     firefox
     gcc
     gnumake
+    gnupg
     google-chrome
-    google-cloud-sdk
+    (google-cloud-sdk.withExtraComponents (with google-cloud-sdk.components; [
+      gke-gcloud-auth-plugin
+    ]))
     htop
     imagemagick
+    isort
     jq
+    kind
     kubectl
     kubectx
+    kubernetes-helm
+    minikube
+    mypy
     nerdfonts
+    ninja
+    nix-init
+    nix-tree
+    nix-diff
+    nix-info
+    nixfmt
+    nixpkgs-fmt
     nodejs
     nodePackages.npm
+    nodePackages.prettier
     obs-studio
+    pdfgrep
+    pdm
+    pipenv
+    pipx
+    podman
+    poetry
+    postgresql
+    pre-commit
+    python3
+    python3Packages.pip
+    python3Packages.tensorboard
     rclone
     ripgrep
     rsync
@@ -53,12 +67,10 @@
     shellcheck
     slack
     spotify
-    stdenv.cc.cc.lib
-    steam
+    skaffold
+    terraform
     transmission-gtk
     tree
-    unzip
-    vlc
     wget
     zip
     yarn
@@ -66,8 +78,7 @@
   ] ++ (with pkgs.gnomeExtensions;
     [
       blur-my-shell
-      caffeine
-      night-theme-switcher
+      hue-lights
       rounded-window-corners
     ]);
 
@@ -78,52 +89,24 @@
         "appindicatorsupport@rgcjonas.gmail.com"
         "apps-menu@gnome-shell-extensions.gcampax.github.com"
         "blur-my-shell@aunetx"
-        "caffeine@patapon.info"
-        "nightthemeswitcher@romainvigier.fr"
+        "hue-lights@chlumskyvaclav.gmail.com"
         "places-menu@gnome-shell-extensions.gcampax.github.com"
         "rounded-window-corners@yilozt"
       ];
     };
   };
 
-  programs = {
-    home-manager.enable = true;
-    man.enable = true;
-    vim.enable = true;
-    bash.enable = true;
-    zsh.enable = true;
-    tmux.enable = true;
-    starship = {
-      enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
-      settings = {
-        kubernetes.disabled = false;
-        gcloud.format = "on [$symbol(@$domain)]($style) ";
-      };
-    };
-    fzf = {
-      enable = true;
-      enableBashIntegration = true;
-      enableZshIntegration = true;
-    };
-    direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-    };
-  };
-
   nixpkgs.config = {
     allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
       "discord"
+      "dropbox"
       "google-chrome"
       "slack"
       "spotify"
-      "steam"
-      "steam-original"
       "vscode"
       "vscode-extension-github-copilot"
       "vscode-extension-MS-python-vscode-pylance"
+      "vscode-extension-ms-vscode-cpptools"
       "vscode-extension-ms-vscode-remote-remote-ssh"
       "vscode-extension-ms-vsliveshare-vsliveshare"
       "zoom"
