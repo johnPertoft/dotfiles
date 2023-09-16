@@ -34,6 +34,7 @@
         nixos-home = import ./hosts/nixos/home-desktop inputs;
         #nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
+      nixosModules = import ./modules/nixos inputs;
       
       #homeModules = import ./home-manager inputs;
 
