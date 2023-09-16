@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    pre-commit-hooks = { 
+    pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -25,7 +25,7 @@
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
         };
         # legacyPackages.homeConfigurations = {
-          # TODO
+        # TODO
         # }
       };
     in
@@ -35,7 +35,7 @@
         nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
       nixosModules = import ./modules/nixos inputs;
-      
+
       #homeModules = import ./home-manager inputs;
 
       # TODO: Have this here?

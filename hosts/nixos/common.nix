@@ -120,7 +120,7 @@
 
   # Enable Steam games.
   programs.steam.enable = true;
-  
+
   # TODO: Put this somewhere else.
   # To run ark-client we need cargo in the steam fhs environment.
   nixpkgs.config.packageOverrides = pkgs: {
