@@ -32,7 +32,7 @@
     flake-utils.lib.eachDefaultSystem mkSystem // {
       nixosConfigurations = {
         nixos-home = import ./hosts/nixos/home-desktop inputs;
-        #nixos-work = import ./hosts/nixos/work-desktop inputs;
+        nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
       nixosModules = import ./modules/nixos inputs;
       
