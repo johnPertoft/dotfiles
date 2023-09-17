@@ -33,15 +33,6 @@
         nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
       nixosModules = import ./modules/nixos inputs;
-      homeModules = import ./home-manager inputs;
-
-      # TODO: Have this here?
-      # homeConfigurations = {
-      #   "john@x86_64-linux" = inputs.home-manager.lib.homeManagerConfiguration {
-      #     #pkgs = nixpkgs-unstable.legacyPackages.x86_64-linux;
-      #     pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      #     modules = [ ./home-manager/home.nix ];
-      #   };
-      # };
+      homeModules = import ./modules/home-manager inputs;
     };
 }
