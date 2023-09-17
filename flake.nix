@@ -24,9 +24,7 @@
           pkgs = nixpkgs.legacyPackages.${system};
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
         };
-        # legacyPackages.homeConfigurations = {
-        # TODO
-        # }
+        legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
       };
     in
     flake-utils.lib.eachDefaultSystem mkSystem // {
@@ -35,8 +33,7 @@
         nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
       nixosModules = import ./modules/nixos inputs;
-
-      #homeModules = import ./home-manager inputs;
+      homeModules = import ./home-manager inputs;
 
       # TODO: Have this here?
       # homeConfigurations = {
