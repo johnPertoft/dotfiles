@@ -1,1 +1,3 @@
-{ nixpkgs, ... }: {}
+{ nixpkgs, ... }: {
+    foo = import ./home;
+}
