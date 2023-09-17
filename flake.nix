@@ -25,17 +25,20 @@
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
         };
         #legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
-        legacyPackages.homeConfigurations = {
-          
-        };
+        # legacyPackages.homeConfigurations = {
+
+        # };
       };
     in
     flake-utils.lib.eachDefaultSystem mkSystem // {
+      nixosModules = import ./modules/nixos inputs;
       nixosConfigurations = {
         nixos-home = import ./hosts/nixos/home-desktop inputs;
         nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
-      nixosModules = import ./modules/nixos inputs;
       homeModules = import ./modules/home-manager inputs;
+      homeConfigurations = {
+        "john@x86_64-linux" = import ./homes/john.nix inputs;
+      };
     };
 }
