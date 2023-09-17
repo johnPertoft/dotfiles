@@ -24,7 +24,10 @@
           pkgs = nixpkgs.legacyPackages.${system};
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
         };
-        legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
+        #legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
+        legacyPackages.homeConfigurations = {
+          
+        };
       };
     in
     flake-utils.lib.eachDefaultSystem mkSystem // {
