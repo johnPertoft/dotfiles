@@ -1,3 +1,3 @@
 { nixpkgs, ... }: {
-    foo = import ./home;
+    default = import ./home;
 }
