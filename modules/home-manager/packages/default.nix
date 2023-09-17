@@ -3,6 +3,7 @@
     act
     actionlint
     awscli
+    binutils
     black
     buildah
     buildkit
@@ -24,6 +25,7 @@
     google-chrome
     google-cloud-sdk
     htop
+    imagemagick
     isort
     jq
     kind
@@ -32,6 +34,7 @@
     kubernetes-helm
     minikube
     mypy
+    nerdfonts
     ninja
     nix-init
     nix-tree
