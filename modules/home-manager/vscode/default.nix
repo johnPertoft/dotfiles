@@ -5,6 +5,8 @@ let
     then "$HOME/Library/Application Support/Code/User"
     else "$HOME/.config/Code/User";
 
+  userSettings = builtins.fromJSON (builtins.readFile "${self}/modules/home-manager/vscode/settings.json");
+
   extensions = with pkgs.vscode-extensions; [
     eamodio.gitlens
     github.copilot
