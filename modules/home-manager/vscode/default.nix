@@ -23,7 +23,7 @@ in
     package = pkgs.vscode;
   }
 
-#   home.activation = {
-#     # TODO
-#   };
-}
+    #   home.activation = {
+    #     # TODO
+    #   };
+    }
