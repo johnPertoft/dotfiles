@@ -1,1 +1,2 @@
-# TODO: maybe add one for gnome instead
+# TODO:
+{ pkgs, ... }: { }
