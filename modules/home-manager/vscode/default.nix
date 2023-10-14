@@ -9,14 +9,19 @@ let
 
   extensions = with pkgs.vscode-extensions; [
     eamodio.gitlens
+    esbenp.prettier-vscode
     github.copilot
-    matklad.rust-analyzer
+    hashicorp.terraform
+    jnoortheen.nix-ide
     ms-azuretools.vscode-docker
     ms-python.python
     ms-python.vscode-pylance
     ms-toolsai.jupyter
     ms-vscode-remote.remote-ssh
     ms-vsliveshare.vsliveshare
+    redhat.vscode-yaml
+    rust-lang.rust-analyzer
+    tamasfe.even-better-toml
   ];
 in
 {
