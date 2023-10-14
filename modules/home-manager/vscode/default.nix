@@ -34,7 +34,7 @@ in
 
   home.activation = {
     beforeCheckLinkTargets = {
-      after= [ ];
+      after = [ ];
       before = [ "checkLinkTargets" ];
       data = ''
         if [ -f "${settings-directory}/settings.json" ]; then
