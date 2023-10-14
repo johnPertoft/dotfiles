@@ -1,9 +1,7 @@
 { config, pkgs, ... }:
 {
-  # Define hostname.
   networking.hostName = "nixos";
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.john = {
     isNormalUser = true;
     description = "John Pertoft";

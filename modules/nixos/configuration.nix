@@ -68,10 +68,6 @@
       vim
       gnomeExtensions.appindicator
     ];
-    # shellAliases = {
-    #   switch-system = "nixos-rebuild switch --flake .";
-    #   list-generations = "nix-env --list-generations";
-    # };
     shells = [ pkgs.zsh ];
     variables = {
       EDITOR = "vim";
