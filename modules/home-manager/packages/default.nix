@@ -66,7 +66,26 @@
     tree
     wget
     yarn
-  ];
+  ] ++ (with pkgs.gnomeExtensions;
+    [
+      blur-my-shell
+      hue-lights
+      rounded-window-corners
+    ]);
+  
+  # Use `dconf watch /` to track stateful changes you are doing, then set them here.
+  dconf.settings = {
+    "org/gnome/shell" = {
+      enabled-extensions = [
+        "appindicatorsupport@rgcjonas.gmail.com"
+        "apps-menu@gnome-shell-extensions.gcampax.github.com"
+        "blur-my-shell@aunetx"
+        "hue-lights@chlumskyvaclav.gmail.com"
+        "places-menu@gnome-shell-extensions.gcampax.github.com"
+        "rounded-window-corners@yilozt"
+      ];
+    };
+  };
 
   nixpkgs.config = {
     allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
