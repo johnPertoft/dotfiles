@@ -50,4 +50,4 @@
       enableGitCredentialHelper = false;
     };
   }
-    }
+}

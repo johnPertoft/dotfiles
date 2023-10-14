@@ -72,7 +72,7 @@
       hue-lights
       rounded-window-corners
     ]);
-  
+
   # Use `dconf watch /` to track stateful changes you are doing, then set them here.
   dconf.settings = {
     "org/gnome/shell" = {
