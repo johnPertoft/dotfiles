@@ -25,7 +25,7 @@ jobs:
 
       - name: Setup caching
         uses: DeterminateSystems/magic-nix-cache-action@main
-      
+
       - name: Update flake
         run: nix flake update --commit-lock-file
 
