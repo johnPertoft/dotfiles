@@ -25,7 +25,6 @@
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
         };
         packages = import ./packages (inputs // { inherit system; });
-        #legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
         legacyPackages.homeConfigurations = import ./home.nix (inputs // { inherit system; });
       };
     in
