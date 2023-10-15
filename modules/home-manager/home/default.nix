@@ -49,5 +49,5 @@
       settings.git_protocol = "ssh";
       enableGitCredentialHelper = false;
     };
-  }
+  };
 }
