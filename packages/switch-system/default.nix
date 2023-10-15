@@ -6,7 +6,8 @@
     else [ nix-darwin.packages.${pkgs.system}.darwin-rebuild ];
   text =
     if pkgs.stdenv.hostPlatform.isLinux
-    then "sudo nixos-rebuild switch --flake ${self}"
+    #then "sudo nixos-rebuild switch --flake ${self}"
+    then "echo ${self}"
     else "darwin-rebuild switch --flake ${self}"
   ;
 }
