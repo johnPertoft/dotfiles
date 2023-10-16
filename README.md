@@ -21,5 +21,8 @@
 ## TODO
 
 ```bash
+# TODO: fix this so we can run nix run .#switch-system nixos-home instead.
 sudo nixos-rebuild switch --flake .#nixos-home
+
+nix shell .#ipython
 ```
