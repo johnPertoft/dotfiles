@@ -23,7 +23,9 @@
     gnumake
     gnupg
     google-chrome
-    google-cloud-sdk
+    (google-cloud-sdk.withExtraComponents (with google-cloud-sdk.components; [
+      gke-gcloud-auth-plugin
+    ]))
     htop
     imagemagick
     isort
@@ -61,11 +63,16 @@
     rsync
     rustup
     shellcheck
+    slack
+    spotify
     skaffold
     terraform
+    transmission-gtk
     tree
     wget
+    zip
     yarn
+    zoom-us
   ] ++ (with pkgs.gnomeExtensions;
     [
       blur-my-shell
