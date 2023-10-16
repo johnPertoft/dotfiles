@@ -101,14 +101,13 @@
       "google-chrome"
       "slack"
       "spotify"
-      # "steam-original"
-      # "steam"
       "vscode"
       "vscode-extension-github-copilot"
       "vscode-extension-MS-python-vscode-pylance"
       "vscode-extension-ms-vscode-cpptools"
       "vscode-extension-ms-vscode-remote-remote-ssh"
       "vscode-extension-ms-vsliveshare-vsliveshare"
+      "zoom"
     ];
   };
 }

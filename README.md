@@ -17,3 +17,8 @@
    # Update inputs
    nix flake update --commit-lock-file .
    ```
+
+## TODO
+```bash
+sudo nixos-rebuild switch --flake .#nixos-home
+```
