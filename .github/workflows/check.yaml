@@ -11,7 +11,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v5
 
       - name: Show flake
-        run: nix flake Show
+        run: nix flake show
 
       - name: Check flake evaluation
         run: nix flake check --keep-going
