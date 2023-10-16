@@ -48,6 +48,7 @@
     nodejs
     nodePackages.npm
     nodePackages.prettier
+    obs-studio
     pdfgrep
     pdm
     pipenv
