@@ -13,6 +13,7 @@
     coreutils-full
     curl
     dive
+    discord
     docker-client
     docker-slim
     fantasque-sans-mono
