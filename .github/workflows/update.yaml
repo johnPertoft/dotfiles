@@ -32,4 +32,5 @@ jobs:
       - name: Check flake
         run: nix flake check --all-systems
 
-      # - run: git push
+      - name: Push update
+        run: git push
