@@ -4,8 +4,8 @@ pkgs.buildEnv {
   paths = [
     (pkgs.python3.withPackages (ps: with ps; [
       ipython
-      jax
-      jaxlib
+      # jax
+      # jaxlib
       # jaxlibWithCuda
       jupyter
       matplotlib
