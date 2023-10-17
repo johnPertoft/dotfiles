@@ -22,6 +22,13 @@ let
     redhat.vscode-yaml
     rust-lang.rust-analyzer
     tamasfe.even-better-toml
+  ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+    {
+      name = "copilot-chat";
+      publisher = "github";
+      version = "0.8.0";
+      sha256 = "IJ75gqsQj0Ukjlrqevum5AoaeZ5vOfxX/4TceXe+EIg=";
+    }
   ];
 in
 {
