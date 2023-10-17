@@ -29,6 +29,7 @@
   "editor.fontFamily": "Hack Nerd Font",
   "editor.fontLigatures": true,
   "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
   "github.copilot.enable": {
     "*": true,
     "yaml": true,
