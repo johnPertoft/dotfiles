@@ -1,5 +1,7 @@
 # dotfiles
 
+# Usage
+
 1. Be on NixOS or install nix with flakes
 
 2. ```
@@ -23,6 +25,6 @@
 ```bash
 # TODO: fix this so we can run nix run .#switch-system nixos-home instead.
 sudo nixos-rebuild switch --flake .#nixos-home
-
+nix run .#switch-home
 nix shell .#ipython
 ```
