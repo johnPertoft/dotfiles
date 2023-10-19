@@ -31,6 +31,7 @@ let
     modules = [
       ./${name}/home.nix
       self.homeModules.home
+      nix-index-database.hmModules.nix-index
     ];
     extraSpecialArgs = inputs;
   };
