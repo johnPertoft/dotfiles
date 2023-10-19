@@ -60,7 +60,7 @@
   #hardware.nvidia.modesetting.enable = true;
 
   # Set default shell for all users.
-  users.defaultUserShell = pkgs.zsh;
+  users.defaultUserShell = pkgs.fish;
 
   # Set a basic default environment for all users.
   environment = {
@@ -68,7 +68,7 @@
       vim
       gnomeExtensions.appindicator
     ];
-    shells = [ pkgs.zsh ];
+    shells = [ pkgs.fish ];
     variables = {
       EDITOR = "vim";
       # TODO https://github.com/NixOS/nixpkgs/issues/32580
@@ -79,7 +79,7 @@
   # Add programs available for all users.
   programs = {
     command-not-found.enable = true;
-    zsh.enable = true;
+    fish.enable = true;
     steam.enable = true;
   };
 
