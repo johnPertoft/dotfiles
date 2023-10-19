@@ -43,8 +43,13 @@ in
     package = pkgs.vscode;
     userSettings = userSettings;
     extensions = extensions;
+
+    # We don't want VSCode to autoupdate extensions to avoid weird states.
+    mutableExtensionsDir = false;
   };
 
+  # VSCode settings as a mutable copy of the user settings defined here
+  # to avoid write errors.
   home.activation = {
     beforeCheckLinkTargets = {
       after = [ ];
