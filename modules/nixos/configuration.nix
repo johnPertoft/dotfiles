@@ -83,6 +83,16 @@
     steam.enable = true;
   };
 
+  # TODO: Where should this go?
+  # To run ark-client we need cargo in the steam fhs environment.
+  nixpkgs.config.packageOverrides = pkgs: {
+    steam = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        cargo
+      ];
+    };
+  };
+
   # Enable system-wide services.
   services = {
     xserver = {
