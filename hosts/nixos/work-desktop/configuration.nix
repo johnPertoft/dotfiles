@@ -10,8 +10,8 @@
   };
 
   nixpkgs.config = {
-    cudaSupport = true;
-    cudnnSupport = true;
+    cudaSupport = false;
+    cudnnSupport = false;
     allowUnfree = true;
   };
 }
