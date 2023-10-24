@@ -38,6 +38,7 @@
     minikube
     mypy
     nerdfonts
+    nil
     ninja
     nix-init
     nix-tree
