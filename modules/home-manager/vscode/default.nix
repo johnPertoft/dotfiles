@@ -17,18 +17,19 @@ let
     ms-python.python
     ms-python.vscode-pylance
     ms-toolsai.jupyter
+    ms-vscode-remote.remote-containers
     ms-vscode-remote.remote-ssh
     ms-vsliveshare.vsliveshare
     redhat.vscode-yaml
     rust-lang.rust-analyzer
     tamasfe.even-better-toml
   ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-    {
-      name = "remote-containers";
-      publisher = "ms-vscode-remote";
-      version = "0.315.1";
-      sha256 = "esDIiSI/g/1Si8WiT9jkxM6dmSCxIhS3uzaxcc0QBj4=";
-    }
+    # {
+    #   name = "remote-containers";
+    #   publisher = "ms-vscode-remote";
+    #   version = "0.315.1";
+    #   sha256 = "esDIiSI/g/1Si8WiT9jkxM6dmSCxIhS3uzaxcc0QBj4=";
+    # }
     {
       name = "copilot-chat";
       publisher = "github";
