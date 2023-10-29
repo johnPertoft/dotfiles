@@ -1,10 +1,11 @@
 { home-manager, nixpkgs, nixpkgs-unstable, nix-index-database, system, self, ... }@inputs:
 let
   overlays = [
-    (self: super:
+    (final: prev:
       let
         pkgs = import nixpkgs-unstable {
-          inherit super system;
+          system = system;
+          super = prev;
           config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) [
             "vscode"
             "vscode-extension-github-copilot"
@@ -15,12 +16,29 @@ let
             "vscode-extension-ms-vsliveshare-vsliveshare"
           ];
         };
+        # pkgs.python311Packages.jedi = pkgs.python311Packages.jedi.overrideAttrs (old: {
+        #   doCheck = false;
+        #   doInstallCheck = false;
+        # });
       in
       {
         vscode = pkgs.vscode;
         vscode-extensions = pkgs.vscode-extensions;
       }
     )
+    # TODO: How to do this?
+    # (final: prev:
+    #   {
+    #     python311 = prev.python311.override {
+    #       packageOverrides = py-final: py-prev: {
+    #         jedi = py-prev.jedi.overrideAttrs (old: {
+    #           doCheck = false;
+    #           doInstallCheck = false;
+    #         });
+    #       };
+    #     };
+    #   }
+    # )
   ];
 
   names = builtins.attrNames (builtins.readDir ./.);
