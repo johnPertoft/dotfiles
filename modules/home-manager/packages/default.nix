@@ -72,7 +72,6 @@
     terraform
     transmission-gtk
     tree
-    virtualbox
     wget
     zip
     yarn

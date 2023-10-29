@@ -122,6 +122,10 @@
     enableNvidia = true;
   };
 
+  # Enable virtualbox.
+  virtualisation.virtualbox.host.enable = true;
+  users.extraGroups.vboxusers.members = [ "john" ];
+
   # Auto-update system packages periodically.
   system.autoUpgrade = {
     enable = true;
