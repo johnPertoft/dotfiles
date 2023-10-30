@@ -16,10 +16,6 @@ let
             "vscode-extension-ms-vsliveshare-vsliveshare"
           ];
         };
-        # pkgs.python311Packages.jedi = pkgs.python311Packages.jedi.overrideAttrs (old: {
-        #   doCheck = false;
-        #   doInstallCheck = false;
-        # });
       in
       {
         vscode = pkgs.vscode;
