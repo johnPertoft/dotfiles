@@ -66,6 +66,7 @@
     rsync
     rustup
     shellcheck
+    signal-desktop
     slack
     spotify
     skaffold
