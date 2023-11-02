@@ -35,6 +35,7 @@
     kubectl
     kubectx
     kubernetes-helm
+    logseq
     minikube
     mypy
     nerdfonts
