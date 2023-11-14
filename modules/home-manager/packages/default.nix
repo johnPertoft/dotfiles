@@ -74,6 +74,7 @@
     terraform
     transmission-gtk
     tree
+    vlc
     wget
     zip
     yarn
