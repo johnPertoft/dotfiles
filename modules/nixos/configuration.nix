@@ -81,6 +81,22 @@
     command-not-found.enable = true;
     fish.enable = true;
     steam.enable = true;
+
+    # TODO: testing
+    nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        stdenv.cc.cc
+        zlib
+        fuse3
+        icu
+        zlib
+        nss
+        openssl
+        curl
+        expat
+      ];
+    };
   };
 
   # TODO: Where should this go?
