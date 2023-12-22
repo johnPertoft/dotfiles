@@ -71,7 +71,7 @@
     slack
     spotify
     skaffold
-    terraform
+    # terraform  # TODO: Changed license, keep?
     transmission-gtk
     tree
     vlc
