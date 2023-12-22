@@ -35,7 +35,7 @@
     kubectl
     kubectx
     kubernetes-helm
-    logseq
+    # logseq  # Depends on EOL electron
     minikube
     mypy
     nerdfonts
