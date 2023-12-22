@@ -132,6 +132,8 @@
     udev.packages = [ pkgs.gnome.gnome-settings-daemon ];
   };
 
+  services.tailscale.enable = true;
+
   # Enable Docker container runtime.
   virtualisation.docker = {
     enable = true;
