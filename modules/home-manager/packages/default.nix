@@ -78,6 +78,7 @@
     wget
     zip
     yarn
+    yq
     zoom-us
   ] ++ (with pkgs.gnomeExtensions;
     [
