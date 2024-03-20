@@ -18,7 +18,7 @@ let
     ms-python.vscode-pylance
     ms-toolsai.jupyter
     # ms-vscode-remote.remote-containers  # TODO: Only old version available in nixpkgs
-    ms-vscode-remote.remote-ssh
+    # ms-vscode-remote.remote-ssh  # TODO: Not compatible with non nixpkgs remote-containers?
     ms-vsliveshare.vsliveshare
     redhat.vscode-yaml
     rust-lang.rust-analyzer
@@ -35,6 +35,12 @@ let
       publisher = "ms-vscode-remote";
       version = "0.349.0";
       sha256 = "sha256-2cSa1gXCDN3vjUTLmJ3flZ8hvcSZERyBuFXZ6tGCKk8=";
+    }
+    {
+      name = "remote-ssh";
+      publisher = "ms-vscode-remote";
+      version = "0.110.2024030815";
+      sha256 = "sha256-ZgU1IxnZDEF/H6O4d86qjCysK/deiLlHDUCbLIvcT7E=";
     }
   ];
 in
