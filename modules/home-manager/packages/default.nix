@@ -52,6 +52,7 @@
     nodePackages.prettier
     obs-studio
     p4
+    parsec-bin
     pdfgrep
     pdm
     pipenv
@@ -108,6 +109,7 @@
       "discord"
       "dropbox"
       "google-chrome"
+      "parsec-bin"
       "slack"
       "spotify"
       "vscode"
