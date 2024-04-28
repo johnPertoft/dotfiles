@@ -127,9 +127,13 @@
     };
     flatpak.enable = true;
     openssh.enable = false;
-    plex.enable = false;
     printing.enable = false;
     udev.packages = [ pkgs.gnome.gnome-settings-daemon ];
+  };
+
+  services.plex = {
+    enable = true;
+    openFirewall = true;
   };
 
   services.tailscale.enable = true;
