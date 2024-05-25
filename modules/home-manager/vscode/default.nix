@@ -33,14 +33,14 @@ let
     {
       name = "remote-containers";
       publisher = "ms-vscode-remote";
-      version = "0.349.0";
-      sha256 = "sha256-2cSa1gXCDN3vjUTLmJ3flZ8hvcSZERyBuFXZ6tGCKk8=";
+      version = "0.366.0";
+      sha256 = "sha256-Etc/rjwJ47pRjyuLOCf2czlstHs4t71ooC+SvAFzZFY=";
     }
     {
       name = "remote-ssh";
       publisher = "ms-vscode-remote";
-      version = "0.110.2024030815";
-      sha256 = "sha256-ZgU1IxnZDEF/H6O4d86qjCysK/deiLlHDUCbLIvcT7E=";
+      version = "0.112.2024051615";
+      sha256 = "sha256-vnfqb8Bc7UkAUkfNVhazRSubYl/jinaD9wTcxyjwu1k=";
     }
   ];
 in
