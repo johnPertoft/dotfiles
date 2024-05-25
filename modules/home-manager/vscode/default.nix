@@ -10,7 +10,7 @@ let
   extensions = with pkgs.vscode-extensions; [
     eamodio.gitlens
     esbenp.prettier-vscode
-    github.copilot
+    # github.copilot
     hashicorp.terraform
     jnoortheen.nix-ide
     ms-azuretools.vscode-docker
@@ -25,10 +25,16 @@ let
     tamasfe.even-better-toml
   ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
     {
+      name = "copilot";
+      publisher = "github";
+      version = "1.195.0";
+      sha256 = "sha256-Hu+QfKu6mHp7+AkZgv7mSViO1SP93gkOBHMdSzYnloQ=";
+    }
+    {
       name = "copilot-chat";
       publisher = "github";
-      version = "0.8.0";
-      sha256 = "IJ75gqsQj0Ukjlrqevum5AoaeZ5vOfxX/4TceXe+EIg=";
+      version = "0.16.2024052402";
+      sha256 = "sha256-DB0nCVQJuOnjXt41NjdOCD/a13HvjvWDfay3RoL6VUE=";
     }
     {
       name = "remote-containers";
