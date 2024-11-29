@@ -1,5 +1,12 @@
-{ pkgs, lib, ... }: {
+{ pkgs, lib, ... }:
+let
+  proton-ge-custom = pkgs.callPackage ./proton-ge.nix { };
+in
+{
+  home.sessionVariables.STEAM_EXTRA_COMPAT_TOOLS_PATHS = proton-ge-custom;
   home.packages = with pkgs; [
+    proton-ge-custom
+
     act
     actionlint
     awscli
