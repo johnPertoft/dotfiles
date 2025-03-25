@@ -22,7 +22,7 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v5
 
       - name: Setup caching
-        uses: DeterminateSystems/magic-nix-cache-action@main
+        uses: DeterminateSystems/flakehub-cache-action@main
 
       - name: Update flake
         run: nix flake update --commit-lock-file
