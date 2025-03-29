@@ -1,12 +1,15 @@
-{ config, pkgs, lib, self, ... }: {
+{ config
+, pkgs
+, lib
+, ...
+}:
+{
   home.username = "john";
-  home.homeDirectory = "/home/john";
+  home.homeDirectory = if pkgs.stdenv.hostPlatform.isDarwin then "/Users/john" else "/home/john";
   programs.git.userName = "John Pertoft";
   programs.git.userEmail = "john.pertoft@gmail.com";
-  imports = [
-    self.homeModules.vscode
-    self.homeModules.vim
-    self.homeModules.git
-    self.homeModules.packages
-  ];
+  # services.auto-upgrade = {
+  #   enable = true;
+  #   flake = "github:johnPertoft/dotfiles";
+  # };
 }
