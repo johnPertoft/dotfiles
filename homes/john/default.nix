@@ -24,7 +24,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.fzf
     self.homeModules.git
     #self.homeModules.git-refresh
-    self.homeModules.github
+    #self.homeModules.github
     #self.homeModules.helix
     self.homeModules.home
     #self.homeModules.kitty
