@@ -44,9 +44,6 @@ in
         if [ -f "${settings-directory}/settings.json" ]; then
           rm "${settings-directory}/settings.json"
         fi
-        if [ -f "${settings-directory}/keybindings.json" ]; then
-          rm "${settings-directory}/keybindings.json"
-        fi
       '';
     };
 
@@ -57,9 +54,6 @@ in
         cat ${
           (pkgs.formats.json { }).generate "settings.json" userSettings
         } > "${settings-directory}/settings.json"
-        cat ${
-          (pkgs.formats.json { }).generate "keybindings.json" keybindings
-        } > "${settings-directory}/keybindings.json"
       '';
     };
   };
