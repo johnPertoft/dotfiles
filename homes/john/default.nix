@@ -3,7 +3,6 @@
 , nix-index-database
 , system
 , self
-, nixvim
 , ...
 }@inputs:
 
@@ -19,8 +18,8 @@ home-manager.lib.homeManagerConfiguration {
     ./home.nix
     nix-index-database.hmModules.nix-index
     self.homeModules.${system}
-    self.homeModules.auto-audit
-    self.homeModules.auto-upgrade
+    #self.homeModules.auto-audit
+    #self.homeModules.auto-upgrade
     #self.homeModules.emacs
     self.homeModules.fzf
     self.homeModules.git
@@ -29,7 +28,7 @@ home-manager.lib.homeManagerConfiguration {
     #self.homeModules.helix
     self.homeModules.home
     #self.homeModules.kitty
-    self.homeModules.neovim
+    #self.homeModules.neovim
     self.homeModules.tmux
     self.homeModules.vim
     self.homeModules.vscode
