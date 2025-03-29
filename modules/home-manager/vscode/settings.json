@@ -70,6 +70,8 @@
   "editor.wordWrap": "off",
   "explorer.autoReveal": false,
   "extensions.autoUpdate": false,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
