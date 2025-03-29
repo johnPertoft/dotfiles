@@ -27,6 +27,7 @@
   virtualisation.docker = {
     enable = true;
     autoPrune.enable = true;
+    enableNvidia = true; # TODO": deprecated
   };
 
   # For running pre-compiled executables as per https://blog.thalheim.io/2022/12/31/nix-ld-a-clean-solution-for-issues-with-pre-compiled-executables-on-nixos/
