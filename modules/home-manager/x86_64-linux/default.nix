@@ -59,6 +59,7 @@
       steam
       tdesktop
       transmission_4-gtk
+      vlc
       wineWowPackages.full
       yabridge
       yabridgectl
