@@ -14,7 +14,6 @@ let
     "remote.SSH.defaultExtensions" = map (x: x.vscodeExtUniqueId) extensions;
   };
   userSettings = (builtins.fromJSON (builtins.readFile ./settings.json)) // defaultExtensions;
-  userTasks = builtins.fromJSON (builtins.readFile ./tasks.json);
 
   extensions = import ./extensions.nix {
     inherit pkgs;
@@ -25,7 +24,6 @@ in
   programs.vscode = {
     inherit
       userSettings
-      userTasks
       extensions
       ;
     enable = true;
