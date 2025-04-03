@@ -61,7 +61,6 @@
     // {
       nixosConfigurations = {
         nixos-home = import ./hosts/nixos/home-desktop inputs;
-        nixos-work = import ./hosts/nixos/work-desktop inputs;
       };
       nixosModules = import ./modules/nixos inputs;
       # darwinConfigurations = import ./systems inputs;
@@ -69,6 +68,5 @@
       homeModules = import ./modules/home-manager inputs;
       modules = import ./modules inputs;
       overlays = import ./overlays inputs;
-      # templates = import ./templates inputs;
     };
 }
