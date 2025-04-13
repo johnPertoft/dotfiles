@@ -18,17 +18,10 @@ home-manager.lib.homeManagerConfiguration {
     ./home.nix
     nix-index-database.hmModules.nix-index
     self.homeModules.${system}
-    #self.homeModules.auto-audit
-    #self.homeModules.auto-upgrade
-    #self.homeModules.emacs
     self.homeModules.fzf
     self.homeModules.git
-    #self.homeModules.git-refresh
-    #self.homeModules.github
-    #self.homeModules.helix
+    self.homeModules.github
     self.homeModules.home
-    #self.homeModules.kitty
-    #self.homeModules.neovim
     self.homeModules.tmux
     self.homeModules.vim
     self.homeModules.vscode
