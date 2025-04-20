@@ -111,6 +111,7 @@
     fd
     fdupes
     ffmpeg-full
+    file
     fx
     gcc
     gnumake
