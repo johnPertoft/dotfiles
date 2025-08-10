@@ -61,6 +61,7 @@
     // {
       nixosConfigurations = {
         nixos-home = import ./hosts/nixos/home-desktop inputs;
+        # pi = import ./hosts/nixos/pi inputs;
       };
       nixosModules = import ./modules/nixos inputs;
       # darwinConfigurations = import ./systems inputs;
