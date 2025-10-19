@@ -49,7 +49,7 @@
       logseq
       marker
       obs-studio
-      okular
+      #okular
       peek
       reaper
       signal-desktop
