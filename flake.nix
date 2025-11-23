@@ -2,7 +2,8 @@
   description = "A nix config";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -36,6 +37,7 @@
   outputs =
     { self
     , nixpkgs
+    , nixpkgs-unstable
     , flake-utils
     , ...
     }@inputs:
