@@ -6,20 +6,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    flake-utils.url = "github:numtide/flake-utils";
-
     nix-darwin = {
       url = "github:lnl7/nix-darwin/nix-darwin-25.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nix-index-database = {
-      url = "github:Mic92/nix-index-database";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    pre-commit-hooks = {
-      url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -28,8 +16,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-vscode-extensions = {
       url = "github:nix-community/nix-vscode-extensions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    flake-utils.url = "github:numtide/flake-utils";
+
+    pre-commit-hooks = {
+      url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -47,6 +47,7 @@
         "aarch64-linux"
         "aarch64-darwin"
       ];
+
       mkSystem = system: {
         legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
         packages = import ./packages (inputs // { inherit system; });
@@ -63,13 +64,20 @@
     // {
       nixosConfigurations = {
         nixos-home = import ./hosts/nixos/home-desktop inputs;
+
+        # TODO
         # pi = import ./hosts/nixos/pi inputs;
       };
       nixosModules = import ./modules/nixos inputs;
+
+      # TODO
       # darwinConfigurations = import ./systems inputs;
       # darwinModules = import ./modules/nix-darwin inputs;
+
       homeModules = import ./modules/home-manager inputs;
+
       modules = import ./modules inputs;
+
       overlays = import ./overlays inputs;
     };
 }
