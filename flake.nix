@@ -2,8 +2,7 @@
   description = "A nix config";
 
   inputs = {
-    #nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     nix-darwin = {
@@ -68,11 +67,12 @@
         # TODO
         # pi = import ./hosts/nixos/pi inputs;
       };
-      nixosModules = import ./modules/nixos inputs;
 
       # TODO
       # darwinConfigurations = import ./systems inputs;
       # darwinModules = import ./modules/nix-darwin inputs;
+
+      nixosModules = import ./modules/nixos inputs;
 
       homeModules = import ./modules/home-manager inputs;
 

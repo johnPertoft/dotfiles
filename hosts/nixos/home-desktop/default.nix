@@ -4,7 +4,7 @@ nixpkgs.lib.nixosSystem {
   modules = [
     ./configuration.nix
     ./hardware-configuration.nix
-    # self.modules.default
+    self.modules.default
     self.nixosModules.default
     self.nixosModules.cuda
     self.nixosModules.desktop
