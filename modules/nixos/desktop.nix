@@ -53,8 +53,13 @@
   # Provide suggestions of packages to install when a command is not found.
   programs.command-not-found.enable = true;
 
+  # Enable Jellyfin media server.
   services.jellyfin = {
     enable = true;
     openFirewall = true;
   };
+
+  # Set Nix daemon to use lower scheduling priority.
+  nix.daemonCPUSchedPolicy = "idle";
+  nix.daemonIOSchedClass = "idle";
 }

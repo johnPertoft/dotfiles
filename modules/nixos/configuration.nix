@@ -21,14 +21,16 @@
   };
 
   # Set default shell for all users.
-  users.defaultUserShell = pkgs.fish;
   programs.fish.enable = true;
+  users.defaultUserShell = pkgs.fish;
 
   # Set a basic default environment for all users.
   environment = {
     systemPackages = with pkgs; [
       vim
       htop
+      ripgrep
+      tmux
     ];
     shellAliases = {
       show-system = "nix derivation show /run/current-system";
