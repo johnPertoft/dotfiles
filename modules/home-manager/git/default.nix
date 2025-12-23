@@ -7,15 +7,6 @@
   programs.git = {
     enable = true;
     package = pkgs.gitFull;
-    aliases = {
-      ci = "commit";
-      co = "checkout";
-      s = "status";
-      l = "log";
-      b = "branch";
-      d = "diff";
-      find = "grep -w";
-    };
     signing = {
       signByDefault = true;
       key = "~/.ssh/id_ed25519";
