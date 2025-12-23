@@ -126,7 +126,7 @@
     jq
     jupyter
     k9s
-    keepassxc
+    #keepassxc
     kind
     kubectl
     kubectx
@@ -149,7 +149,7 @@
     nixos-rebuild
     nixpkgs-review
     nmap
-    nodejs
+    #nodejs
     nodePackages.npm
     nodePackages.prettier
     opusTools
