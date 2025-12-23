@@ -43,7 +43,7 @@
       distrobox
       dropbox
       element-desktop
-      firefox
+      #firefox
       google-chrome
       keepassxc
       logseq
