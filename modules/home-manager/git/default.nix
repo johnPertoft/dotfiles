@@ -30,7 +30,16 @@
       "*.swp"
       ".venv"
     ];
-    extraConfig = {
+    settings = {
+      aliases = {
+        ci = "commit";
+        co = "checkout";
+        s = "status";
+        l = "log";
+        b = "branch";
+        d = "diff";
+        find = "grep -w";
+      };
       branch.sort = "-committerdate";
       core.editor = "vim";
       core.fsmonitor = true;
