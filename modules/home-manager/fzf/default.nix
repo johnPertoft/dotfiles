@@ -40,7 +40,7 @@
     bindkey '^P' fzf-open
   '';
 
-  programs.bash.initExtra = ''
+  programs.bash.initContent = ''
     fzf-rg() {
         ${self.packages.${pkgs.system}.fzf-ripgrep}/bin/fzf-ripgrep "$READLINE_LINE"
     }
