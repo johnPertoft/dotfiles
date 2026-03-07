@@ -59,7 +59,7 @@
       spotify
       stdenv.cc.cc.lib
       steam
-      telegram-desktop
+      # telegram-desktop
       transmission_4-gtk
       vlc
       wineWowPackages.full
