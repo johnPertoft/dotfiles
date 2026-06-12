@@ -153,7 +153,7 @@
     #nodejs
     #nodePackages.npm
     #nodePackages.prettier
-    opusTools
+    opus-tools
     pandoc
     pass
     pdfgrep
