@@ -72,7 +72,6 @@
     ++ (with pkgs.gnomeExtensions; [
       blur-my-shell
       caffeine
-      hue-lights
       system-monitor
       vitals
     ]);
@@ -85,7 +84,6 @@
         "apps-menu@gnome-shell-extensions.gcampax.github.com"
         "blur-my-shell@aunetx"
         "caffeine@patapon.info"
-        "hue-lights@chlumskyvaclav.gmail.com"
         "places-menu@gnome-shell-extensions.gcampax.github.com"
         "system-monitor@gnome-shell-extensions.gcampax.github.com"
         "Vitals@CoreCoding.com"
