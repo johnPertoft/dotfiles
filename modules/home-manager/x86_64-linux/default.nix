@@ -53,7 +53,6 @@
       logseq
       marker
       obs-studio
-      #okular
       peek
       reaper
       signal-desktop
@@ -61,7 +60,6 @@
       spotify
       stdenv.cc.cc.lib
       steam
-      # telegram-desktop
       transmission_4-gtk
       vlc
       wineWowPackages.full
