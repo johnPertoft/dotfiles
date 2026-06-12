@@ -28,8 +28,9 @@
         "firefox-bin-unwrapped"
       ];
     permittedInsecurePackages = [
-      "electron-28.3.3"
-      "electron-27.3.11"
+      #"electron-28.3.3"
+      #"electron-27.3.11"
+      #"docker-28.5.2"  # TODO
     ];
   };
 
