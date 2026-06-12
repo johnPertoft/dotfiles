@@ -151,8 +151,8 @@
     nixpkgs-review
     nmap
     #nodejs
-    nodePackages.npm
-    nodePackages.prettier
+    #nodePackages.npm
+    #nodePackages.prettier
     opusTools
     pandoc
     pass
