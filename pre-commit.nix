@@ -8,7 +8,10 @@
         enable = true;
         excludes = [ "flake.lock" ];
       };
-      shellcheck.enable = true;
+      shellcheck = {
+        enable = true;
+        excludes = [ ".envrc" ];
+      };
       shfmt.enable = true;
     };
   };
