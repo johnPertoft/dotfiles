@@ -62,10 +62,10 @@
     flake-utils.lib.eachSystem systems mkSystem
     // {
       nixosConfigurations = {
-        nixos-home = import ./hosts/nixos/home-desktop inputs;
+        nixos-home = import ./systems/nixos/home-desktop inputs;
 
         # TODO
-        # pi = import ./hosts/nixos/pi inputs;
+        # pi = import ./systems/nixos/pi inputs;
       };
 
       # TODO
