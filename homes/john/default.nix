@@ -16,7 +16,7 @@ home-manager.lib.homeManagerConfiguration {
   };
   modules = [
     ./home.nix
-    nix-index-database.hmModules.nix-index
+    nix-index-database.homeModules.nix-index
     self.homeModules.${system}
     self.homeModules.fzf
     self.homeModules.git

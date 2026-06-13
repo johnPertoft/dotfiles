@@ -12,6 +12,7 @@
     allowUnfreePredicate =
       pkg:
       builtins.elem (lib.getName pkg) [
+        "claude-code"
         "discord"
         "dropbox"
         "google-chrome"
@@ -23,10 +24,13 @@
         "steam-unwrapped"
         "vscode"
         "terraform"
+        "firefox-bin"
+        "firefox-bin-unwrapped"
       ];
     permittedInsecurePackages = [
-      "electron-28.3.3"
-      "electron-27.3.11"
+      #"electron-28.3.3"
+      #"electron-27.3.11"
+      #"docker-28.5.2"  # TODO
     ];
   };
 
@@ -49,7 +53,6 @@
       logseq
       marker
       obs-studio
-      #okular
       peek
       reaper
       signal-desktop
@@ -57,7 +60,6 @@
       spotify
       stdenv.cc.cc.lib
       steam
-      tdesktop
       transmission_4-gtk
       vlc
       wineWowPackages.full
@@ -68,7 +70,6 @@
     ++ (with pkgs.gnomeExtensions; [
       blur-my-shell
       caffeine
-      hue-lights
       system-monitor
       vitals
     ]);
@@ -81,7 +82,6 @@
         "apps-menu@gnome-shell-extensions.gcampax.github.com"
         "blur-my-shell@aunetx"
         "caffeine@patapon.info"
-        "hue-lights@chlumskyvaclav.gmail.com"
         "places-menu@gnome-shell-extensions.gcampax.github.com"
         "system-monitor@gnome-shell-extensions.gcampax.github.com"
         "Vitals@CoreCoding.com"

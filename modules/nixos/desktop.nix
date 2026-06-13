@@ -3,12 +3,8 @@
 
   # Configure graphics settings.
   hardware.graphics.enable = true;
-  services.xserver = {
-    enable = true;
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-    xkb.layout = "se";
-  };
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Configure audio settings.
   services.pulseaudio.enable = false;
@@ -44,8 +40,9 @@
   # Include Steam for all users.
   programs.steam.enable = true;
 
+  # TODO: https://github.com/NixOS/nixpkgs/pull/457391#issuecomment-3622359217
   # Add default web browser for all users.
-  programs.firefox.enable = true;
+  # programs.firefox.enable = true;
 
   # Auto-build and reload shell.nix in the background.
   services.lorri.enable = true;
@@ -53,8 +50,13 @@
   # Provide suggestions of packages to install when a command is not found.
   programs.command-not-found.enable = true;
 
+  # Enable Jellyfin media server.
   services.jellyfin = {
     enable = true;
     openFirewall = true;
   };
+
+  # Set Nix daemon to use lower scheduling priority.
+  nix.daemonCPUSchedPolicy = "idle";
+  nix.daemonIOSchedClass = "idle";
 }

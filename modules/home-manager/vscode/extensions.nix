@@ -28,7 +28,7 @@ let
     ms-python.isort
     ms-python.python
     (if pkgs.config.allowUnfreePredicate "vscode" then ms-python.vscode-pylance else ms-pyright.pyright)
-    ms-toolsai.datawrangler
+    #ms-toolsai.datawrangler
     ms-toolsai.jupyter
     ms-toolsai.jupyter-keymap
     ms-toolsai.jupyter-renderers

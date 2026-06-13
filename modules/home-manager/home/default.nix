@@ -46,6 +46,7 @@
       autocd = true;
     };
     awscli.enable = true;
+    claude-code.enable = true;
     yt-dlp.enable = true;
     nushell.enable = true;
     bash = {
@@ -126,14 +127,14 @@
     jq
     jupyter
     k9s
-    keepassxc
+    #keepassxc
     kind
     kubectl
     kubectx
     kubernetes-helm
     lame
     lynis
-    maple-mono
+    maple-mono.variable
     mdcat
     minikube
     mypy
@@ -149,10 +150,10 @@
     nixos-rebuild
     nixpkgs-review
     nmap
-    nodejs
-    nodePackages.npm
-    nodePackages.prettier
-    opusTools
+    #nodejs
+    #nodePackages.npm
+    #nodePackages.prettier
+    opus-tools
     pandoc
     pass
     pdfgrep

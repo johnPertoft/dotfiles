@@ -27,7 +27,6 @@
   virtualisation.docker = {
     enable = true;
     autoPrune.enable = true;
-    enableNvidia = true; # TODO": deprecated
   };
 
   # For running pre-compiled executables as per https://blog.thalheim.io/2022/12/31/nix-ld-a-clean-solution-for-issues-with-pre-compiled-executables-on-nixos/
@@ -45,6 +44,20 @@
       expat
     ];
   };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    publish = {
+      enable = true;
+      addresses = true;
+    };
+  };
+
+  # Enable systemd services to avoid graphics quirks when waking from suspend.
+  hardware.nvidia.powerManagement.enable = true;
+
+  # TODO: Configure gpu clock speeds and power limits.
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

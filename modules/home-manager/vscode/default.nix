@@ -22,13 +22,13 @@ let
 in
 {
   programs.vscode = {
-    inherit
-      userSettings
-      extensions
-      ;
     enable = true;
-    enableUpdateCheck = false;
-    enableExtensionUpdateCheck = false;
+    profiles.default = {
+      extensions = extensions;
+      userSettings = userSettings;
+      enableUpdateCheck = false;
+      enableExtensionUpdateCheck = false;
+    };
     mutableExtensionsDir = false;
     package = if pkgs.config.allowUnfreePredicate "vscode" then pkgs.vscode else pkgs.vscodium;
   };
