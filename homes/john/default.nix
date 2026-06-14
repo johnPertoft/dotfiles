@@ -22,8 +22,10 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.git
     self.homeModules.github
     self.homeModules.home
+    self.homeModules.kitty
     self.homeModules.tmux
     self.homeModules.vim
     self.homeModules.vscode
+    self.homeModules.xdg
   ];
 }
