@@ -1,5 +1,24 @@
 # dotfiles
 
+# Troubleshooting
+
+## Nix not on PATH (macOS)
+
+The Nix installer adds a shell hook to `/etc/bashrc` but sometimes skips `/etc/zshrc`. Since macOS uses zsh by default, nix won't be on your PATH in interactive terminals. Fix:
+
+```bash
+sudo tee -a /etc/zshrc << 'EOF'
+
+# Nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+# End Nix
+EOF
+```
+
+Then open a new terminal and verify with `nix --version`.
+
 # Usage
 
 ```bash

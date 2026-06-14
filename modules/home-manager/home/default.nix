@@ -107,7 +107,6 @@
     docker-client
     docker-slim
     duckdb
-    electrum
     fantasque-sans-mono
     fd
     fdupes
