@@ -17,7 +17,7 @@ let
 
   extensions = import ./extensions.nix {
     inherit pkgs;
-    vscode-extensions = nix-vscode-extensions.extensions.${pkgs.system};
+    vscode-extensions = nix-vscode-extensions.extensions.${pkgs.stdenv.hostPlatform.system};
   };
 in
 {

@@ -9,7 +9,7 @@ pkgs.writeShellApplication {
     if pkgs.stdenv.hostPlatform.isLinux then
       [ pkgs.nixos-rebuild ]
     else
-      [ nix-darwin.packages.${pkgs.system}.darwin-rebuild ];
+      [ nix-darwin.packages.${pkgs.stdenv.hostPlatform.system}.darwin-rebuild ];
   text =
     if pkgs.stdenv.hostPlatform.isLinux then
       "sudo nixos-rebuild switch --flake ${self}"
