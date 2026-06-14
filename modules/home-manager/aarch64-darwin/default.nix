@@ -24,6 +24,10 @@
     iterm2
   ];
 
+  # Use the Apple-patched system ssh so options like UseKeychain in
+  # ~/.ssh/config don't trip up nix's upstream OpenSSH.
+  programs.git.settings.core.sshCommand = "/usr/bin/ssh";
+
   # TODO Make sure applications show up on cmd+space on macOS.
   # home.activation = {
   #   copyApplications = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
