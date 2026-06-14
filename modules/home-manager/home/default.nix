@@ -181,6 +181,7 @@
     sqlitebrowser
     syft
     terraform
+    tflint
     timidity
     tree
     typst
