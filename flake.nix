@@ -63,8 +63,7 @@
     // {
       inherit (import ./systems inputs) nixosConfigurations darwinConfigurations;
 
-      # TODO
-      # darwinModules = import ./modules/nix-darwin inputs;
+      darwinModules = import ./modules/nix-darwin inputs;
 
       nixosModules = import ./modules/nixos inputs;
 

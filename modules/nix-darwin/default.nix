@@ -1,2 +1,4 @@
-# TODO
-{ ... }: { }
+{ ... }:
+{
+  default = import ./configuration.nix;
+}
