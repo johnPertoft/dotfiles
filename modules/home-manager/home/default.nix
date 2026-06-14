@@ -114,6 +114,7 @@
     file
     fx
     gcc
+    git-filter-repo
     gnumake
     go
     go-tools
