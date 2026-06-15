@@ -25,6 +25,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Daily-rebuilt AI coding agent CLIs (claude-code, codex, gemini-cli, …).
+    # Not following nixpkgs so we get the upstream-built binaries from the
+    # numtide cache rather than rebuilding against our pin.
+    llm-agents.url = "github:numtide/llm-agents.nix";
+
     flake-utils.url = "github:numtide/flake-utils";
 
     pre-commit-hooks = {
