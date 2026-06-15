@@ -8,11 +8,21 @@ let
   # prebuilt in cache.numtide.com). Sourcing here so claude-code et al
   # don't lag behind their upstream releases like nixpkgs stable does.
   agents = llm-agents.packages.${pkgs.stdenv.system};
+
+  # Auto-discover skills: every subdirectory of ./skills becomes a skill
+  # entry. Drop a new <skill-name>/SKILL.md in there and it loads next
+  # switch — no edits to this file needed. Per-home modules can merge
+  # additional skills into the same option using the attrset form.
+  discoverSkills = dir:
+    lib.mapAttrs (name: _: dir + "/${name}")
+      (lib.filterAttrs (_: v: v == "directory") (builtins.readDir dir));
 in
 {
   programs.claude-code = {
     enable = true;
     package = agents.claude-code;
+
+    skills = discoverSkills ./skills;
 
     # MCP servers, rendered into a home-manager plugin and loaded via
     # --plugin-dir. Coexists with ~/.claude.json mcpServers (e.g. glean,
