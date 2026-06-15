@@ -20,6 +20,7 @@
       "*~"
       "*.swp"
       ".venv"
+      "**/.claude/settings.local.json"
     ];
     settings = {
       aliases = {

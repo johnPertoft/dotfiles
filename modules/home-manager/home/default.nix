@@ -78,7 +78,7 @@
     gitui.enable = true;
     pyenv.enable = true;
     #fd.enable = true;
-    #nh.enable = true;
+    nh.enable = true;
     #poetry.enable = true;
     #alacritty.enable = true;
   };
@@ -107,7 +107,6 @@
     docker-client
     docker-slim
     duckdb
-    electrum
     fantasque-sans-mono
     fd
     fdupes
@@ -115,6 +114,7 @@
     file
     fx
     gcc
+    git-filter-repo
     gnumake
     go
     go-tools
@@ -146,7 +146,7 @@
     nix-info
     nix-init
     nix-tree
-    nixfmt-rfc-style
+    nixfmt
     nixos-rebuild
     nixpkgs-review
     nmap
@@ -157,16 +157,14 @@
     pandoc
     pass
     pdfgrep
-    pdm
     phoronix-test-suite
     pijul
     pipenv
-    pipx
+    #pipx
     podman
     postgresql
     pre-commit
     pyenv
-    python3Packages.tensorboard
     pyupgrade
     rclone
     restic
@@ -184,6 +182,7 @@
     sqlitebrowser
     syft
     terraform
+    tflint
     timidity
     tree
     typst

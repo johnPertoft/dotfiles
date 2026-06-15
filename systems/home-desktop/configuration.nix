@@ -54,6 +54,9 @@
     };
   };
 
+  # Enable cross-platform emulator for building aarch64-linux (e.g. pi) locally.
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # Enable systemd services to avoid graphics quirks when waking from suspend.
   hardware.nvidia.powerManagement.enable = true;
 

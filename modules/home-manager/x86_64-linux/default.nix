@@ -50,7 +50,8 @@
       firefox
       google-chrome
       keepassxc
-      logseq
+      # Depends on old electron
+      #logseq
       marker
       obs-studio
       peek
@@ -62,7 +63,7 @@
       steam
       transmission_4-gtk
       vlc
-      wineWowPackages.full
+      wineWow64Packages.full
       yabridge
       yabridgectl
       zlib

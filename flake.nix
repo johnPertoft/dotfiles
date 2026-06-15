@@ -51,7 +51,7 @@
         legacyPackages.homeConfigurations = import ./homes (inputs // { inherit system; });
         packages = import ./packages (inputs // { inherit system; });
         checks = import ./pre-commit.nix (inputs // { inherit system; });
-        formatter = nixpkgs.legacyPackages.${system}.nixfmt-rfc-style;
+        formatter = nixpkgs.legacyPackages.${system}.nixfmt;
         devShells.default = import ./shell.nix {
           pkgs = nixpkgs.legacyPackages.${system};
           shellHook = self.checks.${system}.pre-commit-check.shellHook;
@@ -61,16 +61,9 @@
     in
     flake-utils.lib.eachSystem systems mkSystem
     // {
-      nixosConfigurations = {
-        nixos-home = import ./hosts/nixos/home-desktop inputs;
+      inherit (import ./systems inputs) nixosConfigurations darwinConfigurations;
 
-        # TODO
-        # pi = import ./hosts/nixos/pi inputs;
-      };
-
-      # TODO
-      # darwinConfigurations = import ./systems inputs;
-      # darwinModules = import ./modules/nix-darwin inputs;
+      darwinModules = import ./modules/nix-darwin inputs;
 
       nixosModules = import ./modules/nixos inputs;
 
