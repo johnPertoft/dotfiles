@@ -25,6 +25,11 @@
   # Deduplicate files in the nix store.
   nix.optimise.automatic = true;
 
+  # Lower the nix-daemon's scheduling and IO priority so builds don't make
+  # foreground apps (editor, browser) feel laggy.
+  nix.daemonProcessType = "Background";
+  nix.daemonIOLowPriority = true;
+
   # Global shell aliases.
   environment.shellAliases = {
     show-system = "nix derivation show /run/current-system";
