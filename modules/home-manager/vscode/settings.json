@@ -3,10 +3,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[dockercompose]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   },
   "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   },
   "[go]": {
     "editor.defaultFormatter": "golang.go"
@@ -121,7 +121,7 @@
   "notebook.formatOnSave.enabled": true,
   "notebook.globalToolbar": false,
   "notebook.output.scrolling": false,
-  "notebook.inlineValues": true,
+  "notebook.inlineValues": "on",
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": false,
   "python.analysis.importFormat": "relative",
@@ -136,7 +136,7 @@
   "ruff.importStrategy": "useBundled",
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.enableMultiLinePasteWarning": "auto",
-  "terminal.integrated.fontLigatures": true,
+  "terminal.integrated.fontLigatures.enabled": true,
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.profiles.osx": {
     "tmux-workspace": {
@@ -151,12 +151,12 @@
   "testing.automaticallyOpenPeekView": "never",
   "testing.automaticallyOpenTestResults": "neverOpen",
   "update.mode": "none",
-  "window.autoDetectColorScheme": true,
+  "window.autoDetectColorScheme": false,
   "window.commandCenter": true,
   "window.restoreWindows": "none",
   "window.titleBarStyle": "custom",
   "window.zoomLevel": 0,
-  "workbench.colorTheme": "Sorcerer",
+  "workbench.colorTheme": "Default Dark Modern",
   "workbench.editor.editorActionsLocation": "titleBar",
   "workbench.editor.limit.enabled": true,
   "workbench.editor.limit.excludeDirty": true,
@@ -164,8 +164,6 @@
   "workbench.enableExperiments": false,
   "workbench.iconTheme": "material-icon-theme",
   "workbench.layoutControl.enabled": true,
-  "workbench.preferredDarkColorTheme": "dragan",
-  "workbench.preferredLightColorTheme": "Default Light+",
   "workbench.settings.enableNaturalLanguageSearch": false,
   "workbench.startupEditor": "readme",
   "zenMode.centerLayout": false,
