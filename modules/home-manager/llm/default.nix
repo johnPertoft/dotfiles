@@ -14,11 +14,24 @@ in
     enable = true;
     package = agents.claude-code;
 
-    # MCP servers shared across this Claude Code install. Add new servers
-    # here; reference unpackaged binaries by absolute path until they're
-    # wrapped as nix derivations.
+    # MCP servers, rendered into a home-manager plugin and loaded via
+    # --plugin-dir. Coexists with ~/.claude.json mcpServers (e.g. glean,
+    # bigquery) — claude-code merges both at startup.
     mcpServers = {
-      # nixos.command = lib.getExe pkgs.mcp-nixos;
+      nixos = {
+        type = "stdio";
+        # Skip a flaky test that asserts "Error" is not a substring of a
+        # randomly-picked /nix/store text file — fails when the picked
+        # file legitimately contains the word. Fixed upstream in
+        # utensils/mcp-nixos#154 but not yet in nixpkgs' 2.4.3 pin.
+        command = lib.getExe (pkgs.mcp-nixos.overridePythonAttrs (old: {
+          disabledTests = (old.disabledTests or [ ]) ++ [ "test_read_text_file" ];
+        }));
+      };
+      context7 = {
+        type = "stdio";
+        command = lib.getExe pkgs.context7-mcp;
+      };
     };
   };
 
