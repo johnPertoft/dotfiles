@@ -3,10 +3,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[dockercompose]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   },
   "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    "editor.defaultFormatter": "ms-azuretools.vscode-containers"
   },
   "[go]": {
     "editor.defaultFormatter": "golang.go"
@@ -121,7 +121,7 @@
   "notebook.formatOnSave.enabled": true,
   "notebook.globalToolbar": false,
   "notebook.output.scrolling": false,
-  "notebook.inlineValues": true,
+  "notebook.inlineValues": "on",
   "python.analysis.autoFormatStrings": true,
   "python.analysis.autoImportCompletions": false,
   "python.analysis.importFormat": "relative",
@@ -136,7 +136,7 @@
   "ruff.importStrategy": "useBundled",
   "telemetry.telemetryLevel": "off",
   "terminal.integrated.enableMultiLinePasteWarning": "auto",
-  "terminal.integrated.fontLigatures": true,
+  "terminal.integrated.fontLigatures.enabled": true,
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.profiles.osx": {
     "tmux-workspace": {
