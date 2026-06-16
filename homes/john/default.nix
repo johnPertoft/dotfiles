@@ -25,10 +25,13 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.llm
     self.homeModules.media
     self.homeModules.nix
-    self.homeModules.python
     self.homeModules.desktop.xdg
     self.homeModules.editors.vim
     self.homeModules.editors.vscode
+    self.homeModules.lang.go
+    self.homeModules.lang.node
+    self.homeModules.lang.python
+    self.homeModules.lang.rust
     self.homeModules.vcs.git
     self.homeModules.vcs.github
     self.homeModules.vcs.pijul

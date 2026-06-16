@@ -40,7 +40,6 @@
     coreutils-full
     ctags
     curl
-    delve
     duckdb
     fd
     fdupes
@@ -48,9 +47,6 @@
     fx
     gcc
     gnumake
-    go
-    go-tools
-    gopls
     hadolint
     htop
     iftop
@@ -63,9 +59,6 @@
     nettools
     ninja
     nmap
-    #nodejs
-    #nodePackages.npm
-    #nodePackages.prettier
     pandoc
     pass
     pdfgrep
@@ -78,7 +71,6 @@
     ripgrep
     rsync
     runme
-    rustup
     shellcheck
     snyk
     sqlitebrowser
@@ -88,7 +80,6 @@
     visidata
     wget
     wrk
-    yarn
     yq
   ];
 
