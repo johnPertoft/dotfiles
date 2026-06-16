@@ -16,6 +16,7 @@ home-manager.lib.homeManagerConfiguration {
   };
   modules = [
     ./home.nix
+    ./llm.nix
     nix-index-database.homeModules.nix-index
     self.homeModules.${system}
     self.homeModules.fzf
@@ -23,6 +24,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.github
     self.homeModules.home
     self.homeModules.kitty
+    self.homeModules.llm
     self.homeModules.macos-spotlight-apps
     self.homeModules.tmux
     self.homeModules.vim

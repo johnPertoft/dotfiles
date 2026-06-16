@@ -46,7 +46,6 @@
       autocd = true;
     };
     awscli.enable = true;
-    claude-code.enable = true;
     yt-dlp.enable = true;
     nushell.enable = true;
     bash = {
