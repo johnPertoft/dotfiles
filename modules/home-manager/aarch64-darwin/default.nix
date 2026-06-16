@@ -4,6 +4,10 @@
 , ...
 }:
 {
+  # Mac-only utilities live with the Darwin per-system module so any home
+  # built on Darwin gets them without having to import each one explicitly.
+  imports = [ ../macos-spotlight-apps ];
+
   nixpkgs.config = {
     allowUnfreePredicate =
       pkg:
