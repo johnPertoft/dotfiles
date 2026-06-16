@@ -25,6 +25,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.llm
     self.homeModules.media
     self.homeModules.nix
+    self.homeModules.python
     self.homeModules.desktop.xdg
     self.homeModules.editors.vim
     self.homeModules.editors.vscode

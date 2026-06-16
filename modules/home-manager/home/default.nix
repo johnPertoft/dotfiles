@@ -20,19 +20,11 @@
     icat = "kitten icat";
   };
 
-  # Default startup setup when starting an IPython session.
-  home.file.".ipython/profile_default/startup/setup.ipy".text = ''
-    %pylab inline
-    %load_ext autoreload
-    %autoreload 2
-  '';
-
   # Enable user programs.
   programs = {
     home-manager.enable = true;
     man.enable = true;
     gpg.enable = true;
-    pyenv.enable = true;
     #fd.enable = true;
     #poetry.enable = true;
     #alacritty.enable = true;
@@ -43,12 +35,8 @@
     act
     actionlint
     asdf-vm
-    autoflake
     autossh
-    black
     cmake
-    cookiecutter
-    copier
     coreutils-full
     ctags
     curl
@@ -66,14 +54,11 @@
     hadolint
     htop
     iftop
-    isort
     jq
-    jupyter
     #keepassxc
     llama-cpp
     lynis
     mdcat
-    mypy
     ncdu_1
     nettools
     ninja
@@ -85,12 +70,9 @@
     pass
     pdfgrep
     phoronix-test-suite
-    pipenv
     #pipx
     postgresql
     pre-commit
-    pyenv
-    pyupgrade
     rclone
     restic
     ripgrep
@@ -103,7 +85,6 @@
     syft
     tree
     typst
-    uv
     visidata
     wget
     wrk
