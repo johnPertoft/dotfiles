@@ -26,17 +26,19 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.home
     self.homeModules.llm
     self.homeModules.media
-    self.homeModules.misc
     self.homeModules.nix
     self.homeModules.security
     self.homeModules.utils
     self.homeModules.desktop.xdg
+    self.homeModules.development.build
+    self.homeModules.development.go
+    self.homeModules.development.lint
+    self.homeModules.development.node
+    self.homeModules.development.python
+    self.homeModules.development.rust
+    self.homeModules.development.tools
     self.homeModules.editors.vim
     self.homeModules.editors.vscode
-    self.homeModules.lang.go
-    self.homeModules.lang.node
-    self.homeModules.lang.python
-    self.homeModules.lang.rust
     self.homeModules.vcs.git
     self.homeModules.vcs.github
     self.homeModules.vcs.pijul
