@@ -24,6 +24,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.home
     self.homeModules.kitty
     self.homeModules.llm
+    self.homeModules.macos-spotlight-apps
     self.homeModules.tmux
     self.homeModules.vim
     self.homeModules.vscode
