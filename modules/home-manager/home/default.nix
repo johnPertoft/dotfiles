@@ -132,6 +132,7 @@
     kubectx
     kubernetes-helm
     lame
+    llama-cpp
     lynis
     maple-mono.variable
     mdcat
