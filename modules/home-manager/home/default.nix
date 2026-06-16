@@ -32,7 +32,6 @@
     home-manager.enable = true;
     man.enable = true;
     gpg.enable = true;
-    gitui.enable = true;
     pyenv.enable = true;
     #fd.enable = true;
     #poetry.enable = true;
@@ -48,7 +47,6 @@
     autossh
     black
     cmake
-    commitizen
     cookiecutter
     copier
     coreutils-full
@@ -61,7 +59,6 @@
     file
     fx
     gcc
-    git-filter-repo
     gnumake
     go
     go-tools
@@ -88,7 +85,6 @@
     pass
     pdfgrep
     phoronix-test-suite
-    pijul
     pipenv
     #pipx
     postgresql
@@ -103,7 +99,6 @@
     rustup
     shellcheck
     snyk
-    spr
     sqlitebrowser
     syft
     tree

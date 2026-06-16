@@ -58,4 +58,12 @@
       user.useConfigOnly = true;
     };
   };
+
+  programs.gitui.enable = true;
+
+  home.packages = with pkgs; [
+    commitizen
+    git-filter-repo
+    spr
+  ];
 }

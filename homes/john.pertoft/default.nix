@@ -22,8 +22,6 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.cloud
     self.homeModules.containers
     self.homeModules.fonts
-    self.homeModules.git
-    self.homeModules.github
     self.homeModules.home
     self.homeModules.llm
     self.homeModules.media
@@ -31,6 +29,9 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.desktop.xdg
     self.homeModules.editors.vim
     self.homeModules.editors.vscode
+    self.homeModules.vcs.git
+    self.homeModules.vcs.github
+    self.homeModules.vcs.pijul
     self.homeModules.terminal.fzf
     self.homeModules.terminal.kitty
     self.homeModules.terminal.shell
