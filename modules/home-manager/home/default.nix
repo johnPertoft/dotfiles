@@ -30,65 +30,28 @@
     #alacritty.enable = true;
   };
 
-  # Include additional user packages.
+  # Packages that don't (yet) belong to a focused module: native-build
+  # prerequisites, lint/CI/security tooling, cross-language helpers, and a
+  # few specialised one-offs.
   home.packages = with pkgs; [
     act
     actionlint
     asdf-vm
-    autossh
     cmake
-    coreutils-full
     ctags
-    curl
-    duckdb
-    fd
-    fdupes
-    file
-    fx
     gcc
     gnumake
     hadolint
-    htop
-    iftop
-    jq
     #keepassxc
     llama-cpp
     lynis
-    mdcat
-    ncdu_1
-    nettools
     ninja
-    nmap
-    pandoc
-    pass
-    pdfgrep
-    phoronix-test-suite
     #pipx
-    postgresql
     pre-commit
-    rclone
-    restic
-    ripgrep
-    rsync
-    runme
     shellcheck
     snyk
-    sqlitebrowser
     syft
-    tree
-    typst
-    visidata
-    wget
-    wrk
-    yq
   ];
-
-  # Avoid having ncdu look through cloud storage and network shares.
-  xdg.configFile."ncdu/config".source = (
-    pkgs.writeText "ncdu-config" ''
-      --one-file-system
-    ''
-  );
 
   # Check for release version mismatch between Home Manager and nixpkgs.
   home.enableNixpkgsReleaseCheck = true;

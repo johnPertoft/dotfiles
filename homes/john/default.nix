@@ -20,11 +20,13 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.${system}
     self.homeModules.cloud
     self.homeModules.containers
+    self.homeModules.data
     self.homeModules.fonts
     self.homeModules.home
     self.homeModules.llm
     self.homeModules.media
     self.homeModules.nix
+    self.homeModules.utils
     self.homeModules.desktop.xdg
     self.homeModules.editors.vim
     self.homeModules.editors.vscode
