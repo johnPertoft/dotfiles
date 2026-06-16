@@ -36,8 +36,6 @@
       enable = true;
       autocd = true;
     };
-    awscli.enable = true;
-    yt-dlp.enable = true;
     nushell.enable = true;
     bash = {
       enable = true;
@@ -80,8 +78,6 @@
     autoflake
     autossh
     black
-    buildah
-    buildkit
     cmake
     commitizen
     cookiecutter
@@ -90,13 +86,9 @@
     ctags
     curl
     delve
-    dive
-    docker-client
-    docker-slim
     duckdb
     fd
     fdupes
-    ffmpeg-full
     file
     fx
     gcc
@@ -111,17 +103,10 @@
     isort
     jq
     jupyter
-    k9s
     #keepassxc
-    kind
-    kubectl
-    kubectx
-    kubernetes-helm
-    lame
     llama-cpp
     lynis
     mdcat
-    minikube
     mypy
     ncdu_1
     nettools
@@ -130,7 +115,6 @@
     #nodejs
     #nodePackages.npm
     #nodePackages.prettier
-    opus-tools
     pandoc
     pass
     pdfgrep
@@ -138,7 +122,6 @@
     pijul
     pipenv
     #pipx
-    podman
     postgresql
     pre-commit
     pyenv
@@ -147,35 +130,21 @@
     restic
     ripgrep
     rsync
-    rubberband
     runme
     rustup
     shellcheck
-    skaffold
     snyk
-    sops
-    sox
     spr
     sqlitebrowser
     syft
-    terraform
-    tflint
-    timidity
     tree
     typst
     uv
     visidata
-    vorbis-tools
     wget
     wrk
     yarn
     yq
-    (google-cloud-sdk.withExtraComponents (
-      with google-cloud-sdk.components;
-      [
-        gke-gcloud-auth-plugin
-      ]
-    ))
   ];
 
   # Avoid having ncdu look through cloud storage and network shares.

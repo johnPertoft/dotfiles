@@ -19,6 +19,8 @@ home-manager.lib.homeManagerConfiguration {
     ./llm.nix
     nix-index-database.homeModules.nix-index
     self.homeModules.${system}
+    self.homeModules.cloud
+    self.homeModules.containers
     self.homeModules.fonts
     self.homeModules.fzf
     self.homeModules.git
@@ -26,6 +28,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.home
     self.homeModules.kitty
     self.homeModules.llm
+    self.homeModules.media
     self.homeModules.nix
     self.homeModules.tmux
     self.homeModules.editors.vim
