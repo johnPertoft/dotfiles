@@ -21,17 +21,18 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.cloud
     self.homeModules.containers
     self.homeModules.fonts
-    self.homeModules.fzf
     self.homeModules.git
     self.homeModules.github
     self.homeModules.home
-    self.homeModules.kitty
     self.homeModules.llm
     self.homeModules.media
     self.homeModules.nix
-    self.homeModules.tmux
+    self.homeModules.desktop.xdg
     self.homeModules.editors.vim
     self.homeModules.editors.vscode
-    self.homeModules.desktop.xdg
+    self.homeModules.terminal.fzf
+    self.homeModules.terminal.kitty
+    self.homeModules.terminal.shell
+    self.homeModules.terminal.tmux
   ];
 }

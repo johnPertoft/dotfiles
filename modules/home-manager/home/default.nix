@@ -31,37 +31,6 @@
   programs = {
     home-manager.enable = true;
     man.enable = true;
-    fish.enable = true;
-    zsh = {
-      enable = true;
-      autocd = true;
-    };
-    nushell.enable = true;
-    bash = {
-      enable = true;
-      shellOptions = [
-        "autocd"
-        "cdspell"
-        "dirspell"
-        "checkhash"
-        "checkjobs"
-        "extglob"
-        "globstar"
-        "histappend"
-      ];
-    };
-    nnn.enable = true;
-    starship = {
-      enable = true;
-      enableTransience = true;
-    };
-    direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-      config = {
-        global.hide_env_diff = true;
-      };
-    };
     gpg.enable = true;
     gitui.enable = true;
     pyenv.enable = true;
