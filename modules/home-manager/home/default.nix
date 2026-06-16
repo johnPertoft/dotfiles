@@ -6,11 +6,6 @@
 }@inputs:
 {
 
-  # Add each flake input to registry.
-  nix.registry = (lib.mapAttrs (_: flake: { inherit flake; })) (
-    (lib.filterAttrs (_: lib.isType "flake")) inputs
-  );
-
   # Set environment variables.
   home.sessionVariables = {
     EDITOR = "~/.nix-profile/bin/vim";
@@ -22,10 +17,6 @@
   # Register shell aliases.
   home.shellAliases = {
     ll = "ls -al";
-    edit = "nix edit";
-    search = "nix search";
-    update = "nix flake update --commit-lock-file";
-    switch-home = "home-manager switch --flake .";
     icat = "kitten icat";
   };
 
@@ -77,7 +68,6 @@
     gitui.enable = true;
     pyenv.enable = true;
     #fd.enable = true;
-    nh.enable = true;
     #poetry.enable = true;
     #alacritty.enable = true;
   };
@@ -92,9 +82,7 @@
     black
     buildah
     buildkit
-    cachix
     cmake
-    comma
     commitizen
     cookiecutter
     copier
@@ -106,7 +94,6 @@
     docker-client
     docker-slim
     duckdb
-    fantasque-sans-mono
     fd
     fdupes
     ffmpeg-full
@@ -122,7 +109,6 @@
     htop
     iftop
     isort
-    jetbrains-mono
     jq
     jupyter
     k9s
@@ -134,21 +120,12 @@
     lame
     llama-cpp
     lynis
-    maple-mono.variable
     mdcat
     minikube
     mypy
     ncdu_1
     nettools
-    nil
     ninja
-    nix-diff
-    nix-info
-    nix-init
-    nix-tree
-    nixfmt
-    nixos-rebuild
-    nixpkgs-review
     nmap
     #nodejs
     #nodePackages.npm
@@ -187,7 +164,6 @@
     tree
     typst
     uv
-    victor-mono
     visidata
     vorbis-tools
     wget
@@ -208,9 +184,6 @@
       --one-file-system
     ''
   );
-
-  # Discover fonts installed through home.packages.
-  fonts.fontconfig.enable = true;
 
   # Check for release version mismatch between Home Manager and nixpkgs.
   home.enableNixpkgsReleaseCheck = true;

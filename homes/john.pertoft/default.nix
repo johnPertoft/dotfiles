@@ -19,6 +19,7 @@ home-manager.lib.homeManagerConfiguration {
     ./llm.nix
     nix-index-database.homeModules.nix-index
     self.homeModules.${system}
+    self.homeModules.fonts
     self.homeModules.fzf
     self.homeModules.git
     self.homeModules.github
@@ -26,9 +27,10 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.kitty
     self.homeModules.llm
     self.homeModules.macos-spotlight-apps
+    self.homeModules.nix
     self.homeModules.tmux
-    self.homeModules.vim
-    self.homeModules.vscode
+    self.homeModules.editors.vim
+    self.homeModules.editors.vscode
     self.homeModules.xdg
   ];
 }
