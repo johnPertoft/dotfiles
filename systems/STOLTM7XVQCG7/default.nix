@@ -5,6 +5,7 @@ nix-darwin.lib.darwinSystem {
   modules = [
     ./configuration.nix
     self.darwinModules.default
+    self.darwinModules.homebrew
     self.modules.default
   ];
 }
