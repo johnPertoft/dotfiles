@@ -27,6 +27,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.llm
     self.homeModules.media
     self.homeModules.nix
+    self.homeModules.security
     self.homeModules.utils
     self.homeModules.desktop.xdg
     self.homeModules.editors.vim

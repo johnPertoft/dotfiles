@@ -42,15 +42,10 @@
     gcc
     gnumake
     hadolint
-    #keepassxc
     llama-cpp
-    lynis
     ninja
-    #pipx
     pre-commit
     shellcheck
-    snyk
-    syft
   ];
 
   # Check for release version mismatch between Home Manager and nixpkgs.
