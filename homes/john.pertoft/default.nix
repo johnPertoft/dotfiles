@@ -33,6 +33,6 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.tmux
     self.homeModules.editors.vim
     self.homeModules.editors.vscode
-    self.homeModules.xdg
+    self.homeModules.desktop.xdg
   ];
 }
