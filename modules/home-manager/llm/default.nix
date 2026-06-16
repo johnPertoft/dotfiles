@@ -43,6 +43,13 @@ in
 
     enableMcpIntegration = true;
 
+    # TODO: codex and antigravity-cli also expose a `skills` option with
+    # the same shape. Not sharing yet because skills often encode
+    # agent-specific assumptions (e.g. "use the Plan tool") that don't
+    # translate across CLIs. Revisit once there are real skills to
+    # classify — options for sharing later:
+    #   - Manual opt-in: list specific skill paths per client.
+    #   - Split dir: ./skills/shared/ vs ./skills/claude-only/.
     skills = discoverSkills ./skills;
   };
 
