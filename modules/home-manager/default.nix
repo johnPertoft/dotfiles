@@ -1,8 +1,5 @@
-{ nixpkgs, ... }:
-let
-  names = builtins.attrNames (
-    nixpkgs.lib.filterAttrs (n: v: v == "directory") (builtins.readDir ./.)
-  );
-  importModule = name: import ./${name};
-in
-nixpkgs.lib.genAttrs names importModule
+# Each subdirectory of this directory is exposed as self.homeModules.<name>.
+# Grouping directories (editors, desktop, terminal) expose a nested attrset
+# of their own subdirectories via the same discovery helper.
+{ ... }:
+import ./discover.nix ./.
