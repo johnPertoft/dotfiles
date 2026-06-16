@@ -36,4 +36,18 @@
     switch-system = "nh darwin switch .";
     list-generations = "nix-env --list-generations";
   };
+
+  # Homebrew baseline. Requires brew to already be installed (nix-darwin
+  # doesn't install it — bootstrap with the install.sh from brew.sh once
+  # per machine). Casks/brews/taps are declared in the dedicated
+  # nix-darwin/homebrew module. `cleanup = "none"` leaves manually
+  # installed brews/casks alone.
+  homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = false;
+      upgrade = false;
+      cleanup = "none";
+    };
+  };
 }
