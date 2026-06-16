@@ -30,24 +30,6 @@
     #alacritty.enable = true;
   };
 
-  # Packages that don't (yet) belong to a focused module: native-build
-  # prerequisites, lint/CI/security tooling, cross-language helpers, and a
-  # few specialised one-offs.
-  home.packages = with pkgs; [
-    act
-    actionlint
-    asdf-vm
-    cmake
-    ctags
-    gcc
-    gnumake
-    hadolint
-    llama-cpp
-    ninja
-    pre-commit
-    shellcheck
-  ];
-
   # Check for release version mismatch between Home Manager and nixpkgs.
   home.enableNixpkgsReleaseCheck = true;
 

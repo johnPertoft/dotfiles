@@ -25,6 +25,7 @@ home-manager.lib.homeManagerConfiguration {
     self.homeModules.home
     self.homeModules.llm
     self.homeModules.media
+    self.homeModules.misc
     self.homeModules.nix
     self.homeModules.security
     self.homeModules.utils
