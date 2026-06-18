@@ -1,0 +1,33 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "Python ML project (uv2nix, reproducible)"
+requires-python = ">=3.12"
+dependencies = [
+  "numpy",
+  "torch",
+]
+
+[project.scripts]
+app = "app:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# ---------------------------------------------------------------------------
+# CUDA vs CPU torch selection (resolved into uv.lock).
+# Default: CUDA (cu124) wheels on Linux, CPU/MPS wheels elsewhere.
+# For CPU-only on Linux, point the index at
+#   https://download.pytorch.org/whl/cpu
+# and re-run `uv lock`.
+# ---------------------------------------------------------------------------
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu124", marker = "sys_platform == 'linux'" },
+]
