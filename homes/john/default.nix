@@ -14,20 +14,7 @@ home-manager.lib.homeManagerConfiguration {
       self.overlays.nixpkgs-unstable
     ];
   };
-  modules = [
+  modules = (import ../common.nix inputs) ++ [
     ./home.nix
-    nix-index-database.homeModules.nix-index
-    self.homeModules.${system}
-    self.homeModules.fzf
-    self.homeModules.git
-    self.homeModules.github
-    self.homeModules.home
-    self.homeModules.kitty
-    self.homeModules.llm
-    self.homeModules.macos-spotlight-apps
-    self.homeModules.tmux
-    self.homeModules.vim
-    self.homeModules.vscode
-    self.homeModules.xdg
   ];
 }

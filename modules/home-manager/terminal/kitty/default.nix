@@ -4,6 +4,10 @@
     maple-mono.variable
   ];
 
+  # `icat` renders images inline via kitty's image protocol (kitten ships
+  # with kitty), so the alias lives with the terminal that provides it.
+  home.shellAliases.icat = "kitten icat";
+
   programs.kitty = {
     enable = true;
 

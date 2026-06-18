@@ -14,21 +14,10 @@ home-manager.lib.homeManagerConfiguration {
       self.overlays.nixpkgs-unstable
     ];
   };
-  modules = [
+  modules = (import ../common.nix inputs) ++ [
     ./home.nix
+    # Work laptop: extra host-scoped LLM/agent config (skills, etc.) layered
+    # on top of the shared self.homeModules.llm pulled in by common.nix.
     ./llm.nix
-    nix-index-database.homeModules.nix-index
-    self.homeModules.${system}
-    self.homeModules.fzf
-    self.homeModules.git
-    self.homeModules.github
-    self.homeModules.home
-    self.homeModules.kitty
-    self.homeModules.llm
-    self.homeModules.macos-spotlight-apps
-    self.homeModules.tmux
-    self.homeModules.vim
-    self.homeModules.vscode
-    self.homeModules.xdg
   ];
 }

@@ -18,6 +18,10 @@ let
       (lib.filterAttrs (_: v: v == "directory") (builtins.readDir dir));
 in
 {
+  # Local inference runtime (llama-cli, llama-server, ...). From nixpkgs
+  # rather than the llm-agents flake, which only ships agent CLIs.
+  home.packages = [ pkgs.llama-cpp ];
+
   # Shared MCP servers, defined once and fanned out to every client below
   # via enableMcpIntegration. Each module transforms the generic schema
   # into its native config format. Per-tool overrides remain possible
