@@ -17,17 +17,13 @@
   # Register shell aliases.
   home.shellAliases = {
     ll = "ls -al";
-    icat = "kitten icat";
   };
 
   # Enable user programs.
   programs = {
     home-manager.enable = true;
     man.enable = true;
-    gpg.enable = true;
     #fd.enable = true;
-    #poetry.enable = true;
-    #alacritty.enable = true;
   };
 
   # Check for release version mismatch between Home Manager and nixpkgs.
