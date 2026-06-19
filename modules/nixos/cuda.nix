@@ -14,6 +14,7 @@
     allowUnfree = true;
   };
 
+  # Open kernel module is required on Blackwell (RTX 50xx) and newer.
   hardware.nvidia.open = true;
   # hardware.nvidia.modesetting.enable = true;
   # hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
