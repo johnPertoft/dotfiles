@@ -37,8 +37,7 @@
     resources
   ];
 
-  # Include Steam for all users.
-  programs.steam.enable = true;
+  # Steam and other gaming config now lives in modules/nixos/gaming.nix.
 
   # TODO: https://github.com/NixOS/nixpkgs/pull/457391#issuecomment-3622359217
   # Add default web browser for all users.

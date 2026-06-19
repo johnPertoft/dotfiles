@@ -8,5 +8,6 @@ nixpkgs.lib.nixosSystem {
     self.nixosModules.default
     self.nixosModules.cuda
     self.nixosModules.desktop
+    self.nixosModules.gaming
   ];
 }
