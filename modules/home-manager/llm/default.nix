@@ -18,9 +18,18 @@ let
       (lib.filterAttrs (_: v: v == "directory") (builtins.readDir dir));
 in
 {
-  # Local inference runtime (llama-cli, llama-server, ...). From nixpkgs
-  # rather than the llm-agents flake, which only ships agent CLIs.
-  home.packages = [ pkgs.llama-cpp ];
+  home.packages = [
+    # Local inference runtime (llama-cli, llama-server, ...). From nixpkgs
+    # rather than the llm-agents flake, which only ships agent CLIs.
+    pkgs.llama-cpp
+
+    # pi (earendil-works/pi): terminal coding agent with multi-model
+    # support. Installed as a bare package — unlike claude-code/codex/
+    # antigravity-cli below, home-manager 26.05 ships no `programs.pi`
+    # module, so it can't opt into the shared MCP servers via
+    # enableMcpIntegration. Configure MCP for it manually if needed.
+    agents.pi
+  ];
 
   # Shared MCP servers, defined once and fanned out to every client below
   # via enableMcpIntegration. Each module transforms the generic schema
