@@ -3,8 +3,8 @@
 }:
 {
   home.packages = with pkgs; [
+    nodejs
     yarn
-    #nodejs
     #nodePackages.npm
     #nodePackages.prettier
   ];

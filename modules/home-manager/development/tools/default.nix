@@ -8,5 +8,6 @@
     act
     asdf-vm
     ctags
+    just
   ];
 }
