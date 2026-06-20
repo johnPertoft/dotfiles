@@ -13,6 +13,8 @@
       pkg:
       builtins.elem (lib.getName pkg) [
         "claude-code"
+        "google-chrome"
+        "obsidian"
         "terraform"
         "vscode"
       ];
@@ -20,9 +22,11 @@
 
   home.packages = with pkgs; [
     colima
-    net-news-wire
-    stats
+    google-chrome
     iterm2
+    net-news-wire
+    obsidian
+    stats
   ];
 
   # Use the Apple-patched system ssh so options like UseKeychain in
