@@ -20,6 +20,12 @@
   # Enable networking.
   networking.networkmanager.enable = true;
 
+  # Mullvad VPN daemon + GUI.
+  services.mullvad-vpn = {
+    enable = true;
+    package = pkgs.mullvad-vpn; # CLI + GUI; use pkgs.mullvad for CLI-only
+  };
+
   # Enable Flatpak as a fallback for missing packages.
   services.flatpak.enable = true;
 
