@@ -5,10 +5,11 @@ nixpkgs.lib.nixosSystem {
   modules = [
     ./configuration.nix
     ./hardware-configuration.nix
-    # Service stack (Blocky, monitoring, Tailscale). Keep this commented for the
-    # very first SD image so it stays minimal — just boot + SSH. Once the Pi is
-    # reachable, uncomment and `nixos-rebuild switch` to build it natively.
-    # ./services.nix
+    # Service stack (Blocky, monitoring, Tailscale, Home Assistant). Keep this
+    # commented for the very first SD image so it stays minimal — just boot +
+    # SSH. Once the Pi is reachable, uncomment and `nixos-rebuild switch` to
+    # build it natively.
+    # ./services
     "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
     { nixpkgs.overlays = [ self.overlays.modules-closure ]; }
     { sdImage.compressImage = false; }

@@ -100,8 +100,9 @@ sudo nixos-rebuild switch --flake github:johnPertoft/dotfiles#pi
 sudo tailscale up       # one-time, to join the tailnet
 ```
 
-Grafana is then at `http://pi.local:3000` (also over Tailscale). Point a
-device's DNS at `192.168.0.2` to use Blocky adblocking.
+Grafana is then at `http://pi.local:3000` and Home Assistant at
+`http://pi.local:8123` (both also over Tailscale). Point a device's DNS at
+`192.168.0.2` to use Blocky adblocking.
 
 ## 6. Updating the config later
 
