@@ -4,38 +4,13 @@
 , ...
 }:
 
-# let
-#   grafanaDashboards = lib.mapAttrs' (
-#     name: value:
-#     lib.nameValuePair ("grafana/dashboards/" + name) {
-#       source = ./grafana/dashboards/${name};
-#       group = "grafana";
-#       user = "grafana";
-#     }
-#   ) (builtins.readDir ./grafana/dashboards);
-
-#   alertManagerTemplates = lib.mapAttrs' (
-#     name: value:
-#     lib.nameValuePair ("alertmanager/templates/" + name) {
-#       source = ./prometheus/alertmanager/templates/${name};
-#       group = "alertmanager";
-#       user = "alertmanager";
-#     }
-#   ) (builtins.readDir ./prometheus/alertmanager/templates);
-
-#   configFiles = {
-#     "home-assistant/configuration.yaml" = {
-#       source = ./home-assistant/configuration.yaml;
-#       group = "home-assistant";
-#       user = "home-assistant";
-#       mode = "0644";
-#     };
-#   };
-# in
 {
   hardware.enableRedistributableFirmware = true;
 
   boot = {
+    # The Pi has no ZFS pool; disabling it silences the forceImportRoot warning
+    # and trims the SD image.
+    supportedFilesystems.zfs = lib.mkForce false;
     kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
     initrd.availableKernelModules = [
       "xhci_pci"
@@ -53,25 +28,11 @@
     };
   };
 
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/NIXOS_SD";
-      fsType = "ext4";
-      options = [ "noatime" ];
-    };
-
-    "/var/lib/prometheus2/data" = {
-      fsType = "tmpfs";
-      options = [ "size=1G" ];
-    };
-
-    "/var/cache/jellyfin/transcodes" = {
-      fsType = "tmpfs";
-      options = [ "size=2G" ];
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/NIXOS_SD";
+    fsType = "ext4";
+    options = [ "noatime" ];
   };
-
-  # environment.etc = configFiles // grafanaDashboards // alertManagerTemplates;
 
   networking = {
     hostName = "pi";
@@ -79,6 +40,10 @@
     wireless = {
       enable = true;
       interfaces = [ "wlan0" ];
+      # Also honor an imperative /etc/wpa_supplicant.conf (seeded onto the card
+      # by install.sh) so a headless Pi can join WiFi on first boot without a
+      # password in the repo.
+      allowAuxiliaryImperativeNetworks = true;
     };
 
     defaultGateway = {
@@ -95,20 +60,11 @@
       ];
     };
 
-    firewall = {
-      allowedTCPPorts = [
-        80 # HTTP
-        443 # HTTPS
-        53 # DNS
-      ];
-      allowedUDPPorts = [
-        53 # DNS
-        67 # DHCP server
-        68 # DHCP client
-        5353 # mDNS
-        2049 # NFS
-      ];
-    };
+    # SSH (port 22) is opened by the openssh module. Service-specific ports
+    # (DNS, Grafana, ...) live in services.nix.
+    firewall.allowedUDPPorts = [
+      5353 # mDNS (avahi), so `pi.local` resolves
+    ];
   };
 
   services.fail2ban = {
@@ -128,6 +84,9 @@
     pi = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
+      openssh.authorizedKeys.keyFiles = [
+        ./john.pertoft.pub
+      ];
     };
   };
 
@@ -141,7 +100,6 @@
   };
 
   services.journald.storage = "volatile";
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
