@@ -26,6 +26,23 @@
     starship = {
       enable = true;
       enableTransience = true;
+      settings = {
+        add_newline = true;
+        # Whitelist: only these modules render, in this order. Everything
+        # else (git_status, language versions, ...) is intentionally omitted.
+        format = "$directory$git_branch$cmd_duration$line_break$character";
+        directory = {
+          truncation_length = 3;
+          truncate_to_repo = true;
+        };
+        cmd_duration = {
+          min_time = 500; # ms; only show for commands slower than this
+        };
+        character = {
+          success_symbol = "[❯](bold green)";
+          error_symbol = "[❯](bold red)"; # red prompt on non-zero exit
+        };
+      };
     };
     direnv = {
       enable = true;
