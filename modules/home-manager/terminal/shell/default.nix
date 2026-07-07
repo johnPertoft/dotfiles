@@ -29,11 +29,17 @@
       settings = {
         add_newline = true;
         # Whitelist: only these modules render, in this order. Everything
-        # else (git_status, language versions, ...) is intentionally omitted.
-        format = "$directory$git_branch$cmd_duration$line_break$character";
+        # else (language versions, ...) is intentionally omitted.
+        format = "$directory$git_branch$git_state$git_status$nix_shell$cmd_duration$line_break$character";
         directory = {
           truncation_length = 3;
           truncate_to_repo = true;
+        };
+        # nix-direnv sets IN_NIX_SHELL, so this fires inside `nix develop`
+        # shells entered via direnv as well as plain nix-shell.
+        nix_shell = {
+          format = "via [$symbol$state]($style) ";
+          symbol = "❄️ ";
         };
         cmd_duration = {
           min_time = 500; # ms; only show for commands slower than this
