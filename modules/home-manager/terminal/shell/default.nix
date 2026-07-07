@@ -28,15 +28,12 @@
       enableTransience = true;
       settings = {
         add_newline = true;
-        # Whitelist: only these modules render, in this order. Everything
-        # else (language versions, ...) is intentionally omitted.
-        format = "$directory$git_branch$git_state$git_status$nix_shell$cmd_duration$line_break$character";
+        format = "$directory$git_branch$git_state$git_status$nix_shell$line_break$character";
+        right_format = "$cmd_duration";
         directory = {
           truncation_length = 3;
           truncate_to_repo = true;
         };
-        # nix-direnv sets IN_NIX_SHELL, so this fires inside `nix develop`
-        # shells entered via direnv as well as plain nix-shell.
         nix_shell = {
           format = "via [$symbol$state]($style) ";
           symbol = "❄️ ";
