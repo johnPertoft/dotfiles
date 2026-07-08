@@ -34,3 +34,24 @@ nh home switch github:johnPertoft/dotfiles
 # Shell with ipython and ml packages
 nix shell .#ipython
 ```
+
+# Project templates
+
+Scaffold a dev + build environment for a new project. Each template is a
+self-contained flake (dev shell via `nix develop` + `nix build`), works on
+plain Linux/darwin and NixOS, and documents how to flip CUDA on.
+
+```bash
+# Rust (rust-overlay toolchain + crane build; optional CUDA)
+nix flake init -t github:johnPertoft/dotfiles#rust
+
+# Python ML, uv + PyPI wheels (light; CUDA via wheel index)
+nix flake init -t github:johnPertoft/dotfiles#python-ml-uv
+
+# Python ML, uv2nix (reproducible nix-built env from uv.lock; CUDA)
+nix flake init -t github:johnPertoft/dotfiles#python-ml-uv2nix
+```
+
+Pick the Python version in the template's `flake.nix` (`python = pkgs.python312;`)
+or the Rust toolchain in `rust-toolchain.toml`. See each template's `README.md`
+for CUDA notes (NixOS / plain Linux / darwin differences).
