@@ -48,14 +48,17 @@ The image labels its root partition `NIXOS_SD`, which is what the config's
 
 `configuration.nix` sets `networking.wireless.allowAuxiliaryImperativeNetworks
 = true`, so the NixOS-managed wpa_supplicant also honors an imperative
-`/etc/wpa_supplicant.conf` on the device — no WiFi password goes into the repo.
+`/etc/wpa_supplicant/imperative.conf` on the device — no WiFi password goes into
+the repo. (This is the file wpa_supplicant is launched with, `-c
+/etc/wpa_supplicant/imperative.conf`; the declarative side lives in
+`nixos.conf`.)
 
 `install.sh` prompts for the SSID/password and writes this file for you. Manual
 equivalent (re-insert the card so `NIXOS_SD` mounts):
 
 ```sh
-sudo mkdir -p /run/media/$USER/NIXOS_SD/etc
-sudo tee /run/media/$USER/NIXOS_SD/etc/wpa_supplicant.conf <<'EOF'
+sudo mkdir -p /run/media/$USER/NIXOS_SD/etc/wpa_supplicant
+sudo tee /run/media/$USER/NIXOS_SD/etc/wpa_supplicant/imperative.conf <<'EOF'
 network={
   ssid="YOUR_SSID"
   psk="YOUR_WIFI_PASSWORD"

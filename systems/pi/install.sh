@@ -53,15 +53,15 @@ if [[ -n $ssid ]]; then
 		echo "Error: '$mount' does not exist" >&2
 		exit 1
 	}
-	sudo mkdir -p "$mount/etc"
-	sudo tee "$mount/etc/wpa_supplicant.conf" >/dev/null <<-EOF
+	sudo mkdir -p "$mount/etc/wpa_supplicant"
+	sudo tee "$mount/etc/wpa_supplicant/imperative.conf" >/dev/null <<-EOF
 		network={
 		  ssid="$ssid"
 		  psk="$psk"
 		}
 	EOF
 	sync
-	echo "Wrote $mount/etc/wpa_supplicant.conf"
+	echo "Wrote $mount/etc/wpa_supplicant/imperative.conf"
 fi
 
 echo

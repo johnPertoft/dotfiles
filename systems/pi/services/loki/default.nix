@@ -34,6 +34,17 @@
           };
         }
       ];
+      # Bound disk use: drop chunks older than the retention period. The
+      # compactor enforces it; on the filesystem backend Loki 3.x requires
+      # delete_request_store to be set when retention is enabled.
+      limits_config.retention_period = "336h"; # 14 days
+      compactor = {
+        working_directory = "/var/lib/loki/compactor";
+        compaction_interval = "10m";
+        retention_enabled = true;
+        retention_delete_delay = "2h";
+        delete_request_store = "filesystem";
+      };
       analytics.reporting_enabled = false;
     };
   };
