@@ -13,5 +13,6 @@
     ./alloy
     ./grafana
     ./home-assistant
+    ./jellyfin
   ];
 }
