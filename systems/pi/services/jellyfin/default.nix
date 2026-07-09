@@ -24,10 +24,6 @@
     "d /srv/media/music  2775 pi media -"
   ];
 
-  # NOTE: Jellyfin has no declarative option for *which* folders are libraries;
-  # that mapping lives in Jellyfin's own database/virtual-folder state. Add the
-  # folders above as libraries once via the web UI (Dashboard -> Libraries).
-
   # Web UI, reachable on the LAN and (trusted) over Tailscale. Client
   # auto-discovery ports (UDP 1900/7359) are intentionally left closed.
   networking.firewall.allowedTCPPorts = [ 8096 ];
