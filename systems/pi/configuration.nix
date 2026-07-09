@@ -66,6 +66,14 @@
       ];
     };
 
+    # With a static address there's no DHCP to hand us a resolver, so set one
+    # explicitly or /etc/resolv.conf ends up empty and name resolution breaks
+    # (routing still works, so you can ping 8.8.8.8 but not resolve hosts).
+    # Public resolvers keep DNS decoupled from Blocky during bring-up; once
+    # Blocky is confirmed running you can prepend "127.0.0.1" to route the Pi's
+    # own lookups through the adblocker too.
+    nameservers = [ "1.1.1.1" "1.0.0.1" ];
+
     # SSH (port 22) is opened by the openssh module. Service-specific ports
     # (DNS, Grafana, ...) live in services.nix.
     firewall.allowedUDPPorts = [
