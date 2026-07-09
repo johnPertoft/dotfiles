@@ -4,43 +4,24 @@
 , ...
 }:
 
-# let
-#   grafanaDashboards = lib.mapAttrs' (
-#     name: value:
-#     lib.nameValuePair ("grafana/dashboards/" + name) {
-#       source = ./grafana/dashboards/${name};
-#       group = "grafana";
-#       user = "grafana";
-#     }
-#   ) (builtins.readDir ./grafana/dashboards);
-
-#   alertManagerTemplates = lib.mapAttrs' (
-#     name: value:
-#     lib.nameValuePair ("alertmanager/templates/" + name) {
-#       source = ./prometheus/alertmanager/templates/${name};
-#       group = "alertmanager";
-#       user = "alertmanager";
-#     }
-#   ) (builtins.readDir ./prometheus/alertmanager/templates);
-
-#   configFiles = {
-#     "home-assistant/configuration.yaml" = {
-#       source = ./home-assistant/configuration.yaml;
-#       group = "home-assistant";
-#       user = "home-assistant";
-#       mode = "0644";
-#     };
-#   };
-# in
 {
   hardware.enableRedistributableFirmware = true;
 
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+    # The Pi has no ZFS pool; disabling it silences the forceImportRoot warning
+    # and trims the SD image.
+    supportedFilesystems.zfs = lib.mkForce false;
+    # Stock aarch64 kernel (in the binary cache, so no from-source build). The
+    # Pi has already booted it from the T7, so it's proven on this hardware.
+    # Re-enable the vendor kernel only if some peripheral needs it:
+    # kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
     initrd.availableKernelModules = [
       "xhci_pci"
       "usbhid"
       "usb_storage"
+      "uas" # the Samsung T7 speaks USB Attached SCSI
+      "pcie-brcmstb" # Pi4 PCIe bus — the USB3 controller hangs off it
+      "reset-raspberrypi" # loads the VL805 USB3 controller firmware
     ];
     loader = {
       grub.enable = false;
@@ -53,25 +34,11 @@
     };
   };
 
-  fileSystems = {
-    "/" = {
-      device = "/dev/disk/by-label/NIXOS_SD";
-      fsType = "ext4";
-      options = [ "noatime" ];
-    };
-
-    "/var/lib/prometheus2/data" = {
-      fsType = "tmpfs";
-      options = [ "size=1G" ];
-    };
-
-    "/var/cache/jellyfin/transcodes" = {
-      fsType = "tmpfs";
-      options = [ "size=2G" ];
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/NIXOS_SD";
+    fsType = "ext4";
+    options = [ "noatime" ];
   };
-
-  # environment.etc = configFiles // grafanaDashboards // alertManagerTemplates;
 
   networking = {
     hostName = "pi";
@@ -79,6 +46,10 @@
     wireless = {
       enable = true;
       interfaces = [ "wlan0" ];
+      # Honor an imperative config at /etc/wpa_supplicant/imperative.conf (seed
+      # it with `wpa_passphrase`) so the Pi joins WiFi without a password in the
+      # repo.
+      allowAuxiliaryImperativeNetworks = true;
     };
 
     defaultGateway = {
@@ -95,20 +66,19 @@
       ];
     };
 
-    firewall = {
-      allowedTCPPorts = [
-        80 # HTTP
-        443 # HTTPS
-        53 # DNS
-      ];
-      allowedUDPPorts = [
-        53 # DNS
-        67 # DHCP server
-        68 # DHCP client
-        5353 # mDNS
-        2049 # NFS
-      ];
-    };
+    # With a static address there's no DHCP to hand us a resolver, so set one
+    # explicitly or /etc/resolv.conf ends up empty and name resolution breaks
+    # (routing still works, so you can ping 8.8.8.8 but not resolve hosts).
+    # Public resolvers keep DNS decoupled from Blocky during bring-up; once
+    # Blocky is confirmed running you can prepend "127.0.0.1" to route the Pi's
+    # own lookups through the adblocker too.
+    nameservers = [ "1.1.1.1" "1.0.0.1" ];
+
+    # SSH (port 22) is opened by the openssh module. Service-specific ports
+    # (DNS, Grafana, ...) live in services.nix.
+    firewall.allowedUDPPorts = [
+      5353 # mDNS (avahi), so `pi.local` resolves
+    ];
   };
 
   services.fail2ban = {
@@ -128,8 +98,19 @@
     pi = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
+      openssh.authorizedKeys.keyFiles = [
+        ./john.pertoft.pub
+      ];
     };
   };
+
+  # Passwordless sudo for wheel. Intended as SSH-agent auth (pam_ssh_agent_auth),
+  # but that module is broken on this aarch64 build (dlopen fails with
+  # "undefined symbol: __multf3"), and the accounts are key-only with no
+  # password to fall back on. Since key-only SSH (no password/console login) is
+  # already the sole path onto the box, the private key is effectively the root
+  # credential, so passwordless sudo doesn't meaningfully widen access.
+  security.sudo.wheelNeedsPassword = false;
 
   services.avahi = {
     enable = true;
@@ -141,7 +122,6 @@
   };
 
   services.journald.storage = "volatile";
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
