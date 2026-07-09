@@ -11,11 +11,17 @@
     # The Pi has no ZFS pool; disabling it silences the forceImportRoot warning
     # and trims the SD image.
     supportedFilesystems.zfs = lib.mkForce false;
-    kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
+    # Stock aarch64 kernel (in the binary cache, so no from-source build). The
+    # Pi has already booted it from the T7, so it's proven on this hardware.
+    # Re-enable the vendor kernel only if some peripheral needs it:
+    # kernelPackages = pkgs.linuxKernel.packages.linux_rpi4;
     initrd.availableKernelModules = [
       "xhci_pci"
       "usbhid"
       "usb_storage"
+      "uas" # the Samsung T7 speaks USB Attached SCSI
+      "pcie-brcmstb" # Pi4 PCIe bus — the USB3 controller hangs off it
+      "reset-raspberrypi" # loads the VL805 USB3 controller firmware
     ];
     loader = {
       grub.enable = false;
@@ -40,9 +46,9 @@
     wireless = {
       enable = true;
       interfaces = [ "wlan0" ];
-      # Also honor an imperative /etc/wpa_supplicant.conf (seeded onto the card
-      # by install.sh) so a headless Pi can join WiFi on first boot without a
-      # password in the repo.
+      # Honor an imperative config at /etc/wpa_supplicant/imperative.conf (seed
+      # it with `wpa_passphrase`) so the Pi joins WiFi without a password in the
+      # repo.
       allowAuxiliaryImperativeNetworks = true;
     };
 
@@ -89,6 +95,14 @@
       ];
     };
   };
+
+  # TEMP (remove before merge): during bring-up, allow console login and
+  # passwordless sudo so we're not solely dependent on SSH-key access — a
+  # safety net while the Pi is WiFi-only. `initialPassword` needs mutableUsers,
+  # which the server module otherwise disables; change it with `passwd` after.
+  users.mutableUsers = lib.mkForce true;
+  users.users.pi.initialPassword = "nixos";
+  security.sudo.wheelNeedsPassword = false;
 
   services.avahi = {
     enable = true;
