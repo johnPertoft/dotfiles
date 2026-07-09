@@ -8,12 +8,6 @@
   # interactive method still routes through PAM to the password, so a password
   # login remains possible. Disable it too to make SSH genuinely key-only.
   services.openssh.settings.KbdInteractiveAuthentication = false;
-  # Authenticate sudo via the SSH agent instead of a password. Combined with the
-  # key-only login above (no password anywhere), this means `sudo` only works in
-  # sessions started with agent forwarding (`ssh -A`); a plain SSH session can
-  # log in but cannot sudo. Set `ForwardAgent yes` for these hosts in ssh_config.
-  security.pam.sshAgentAuth.enable = true;
-  security.pam.services.sudo.sshAgentAuth = true;
 
   # Insist all users are declaratively defined.
   users.mutableUsers = false;

@@ -104,6 +104,14 @@
     };
   };
 
+  # Passwordless sudo for wheel. Intended as SSH-agent auth (pam_ssh_agent_auth),
+  # but that module is broken on this aarch64 build (dlopen fails with
+  # "undefined symbol: __multf3"), and the accounts are key-only with no
+  # password to fall back on. Since key-only SSH (no password/console login) is
+  # already the sole path onto the box, the private key is effectively the root
+  # credential, so passwordless sudo doesn't meaningfully widen access.
+  security.sudo.wheelNeedsPassword = false;
+
   services.avahi = {
     enable = true;
     nssmdns4 = true;
