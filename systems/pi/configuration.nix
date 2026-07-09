@@ -104,12 +104,12 @@
     };
   };
 
-  # TEMP (remove before merge): during bring-up, allow console login and
-  # passwordless sudo so we're not solely dependent on SSH-key access — a
-  # safety net while the Pi is WiFi-only. `initialPassword` needs mutableUsers,
-  # which the server module otherwise disables; change it with `passwd` after.
-  users.mutableUsers = lib.mkForce true;
-  users.users.pi.initialPassword = "nixos";
+  # TEMP (remove before merge): passwordless sudo during bring-up so a key-only
+  # SSH session can still run `nixos-rebuild`. The intended replacement is
+  # sshAgentAuth (enabled in the server module) — verify `ssh -A pi@… sudo true`
+  # authenticates via the forwarded agent, then drop this line and rely on that.
+  # (Password login is gone: mutableUsers=false locks the account, SSH is
+  # key-only, so this is the last remaining bring-up crutch.)
   security.sudo.wheelNeedsPassword = false;
 
   services.avahi = {

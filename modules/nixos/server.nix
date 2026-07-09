@@ -4,6 +4,10 @@
   services.openssh.enable = true;
   services.openssh.settings.PermitRootLogin = "no";
   services.openssh.settings.PasswordAuthentication = false;
+  # PasswordAuthentication alone isn't enough: with UsePAM the keyboard-
+  # interactive method still routes through PAM to the password, so a password
+  # login remains possible. Disable it too to make SSH genuinely key-only.
+  services.openssh.settings.KbdInteractiveAuthentication = false;
   security.pam.sshAgentAuth.enable = true;
   security.pam.services.sudo.sshAgentAuth = true;
 
