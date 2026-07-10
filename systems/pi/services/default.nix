@@ -14,5 +14,6 @@
     ./grafana
     ./home-assistant
     ./jellyfin
+    ./transmission
   ];
 }
