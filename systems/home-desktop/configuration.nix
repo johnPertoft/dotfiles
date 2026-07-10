@@ -54,6 +54,10 @@
     };
   };
 
+  # Tailscale client — reach the homelab (the Pi's Tailscale-only services)
+  # over the tailnet. Run `sudo tailscale up` once to authenticate.
+  services.tailscale.enable = true;
+
   # Enable cross-platform emulator for building aarch64-linux (e.g. pi) locally.
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
