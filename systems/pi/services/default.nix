@@ -15,5 +15,6 @@
     ./home-assistant
     ./jellyfin
     ./transmission
+    ./www
   ];
 }
