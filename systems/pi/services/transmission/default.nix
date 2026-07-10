@@ -10,11 +10,9 @@
     # apply to this fresh install.
     package = pkgs.transmission_4;
 
-    # Run under the shared `media` group so finished downloads are readable by
-    # Jellyfin (already a member) and by pi. The module's activation script
-    # owns the download dirs; downloadDirPermissions sets their mode.
+    # Run under the shared `media` group so finished downloads are group-owned
+    # by media and readable by Jellyfin (already a member) and by pi.
     group = "media";
-    downloadDirPermissions = "775";
 
     # Web UI / RPC stays Tailscale-only: openRPCPort = false keeps 9091 out of
     # the LAN firewall, and tailscale0 is a trusted interface, so only tailnet
@@ -34,6 +32,18 @@
       rpc-host-whitelist-enabled = false;
     };
   };
+
+  # The module only creates its own StateDirectory (/var/lib/transmission/*),
+  # not download dirs placed elsewhere — and the ProtectSystem=strict sandbox
+  # bind-mounts download-dir/incomplete-dir, so they must exist on the host
+  # first or the unit fails at NAMESPACE setup. Create them owned
+  # transmission:media (setgid) so finished files stay group-readable by
+  # Jellyfin.
+  systemd.tmpfiles.rules = [
+    "d /srv/downloads            2775 transmission media -"
+    "d /srv/downloads/incomplete 2775 transmission media -"
+    "d /srv/downloads/complete   2775 transmission media -"
+  ];
 
   # No firewall ports opened: the peer port (51413) is useless without a router
   # port-forward (there is none), and the web UI is reached over Tailscale.
