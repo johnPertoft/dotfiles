@@ -18,6 +18,58 @@
         source_labels = ["__journal__systemd_unit"]
         target_label  = "unit"
       }
+      // Map the numeric journal priority (0-7) to a keyword label so the
+      // Grafana "Services" dashboard can filter by severity. Each rule only
+      // replaces on a match (a non-matching "replace" leaves the target as-is),
+      // so exactly one keyword wins per log line.
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "0"
+        replacement   = "emerg"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "1"
+        replacement   = "alert"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "2"
+        replacement   = "crit"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "3"
+        replacement   = "err"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "4"
+        replacement   = "warning"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "5"
+        replacement   = "notice"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "6"
+        replacement   = "info"
+      }
+      rule {
+        source_labels = ["__journal_priority"]
+        target_label  = "priority"
+        regex         = "7"
+        replacement   = "debug"
+      }
     }
 
     loki.source.journal "journal" {
