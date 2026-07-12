@@ -1,6 +1,10 @@
 { ... }:
 
 {
+  # The DTS->AC3 offline remux (its own file: keeps the media-encoding logic
+  # separate from the service/library setup below).
+  imports = [ ./dts-to-ac3.nix ];
+
   # Media server. Runs as the `jellyfin` user; library data lives in
   # /var/lib/jellyfin and the transcode/cache in /var/cache/jellyfin.
   #
