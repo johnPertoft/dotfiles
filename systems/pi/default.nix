@@ -1,10 +1,15 @@
-{ nixpkgs, self, ... }:
+{ nixpkgs, self, hermes-agent, ... }:
 
 nixpkgs.lib.nixosSystem {
   system = "aarch64-linux";
   modules = [
     ./configuration.nix
     ./hardware-configuration.nix
+    # Upstream Hermes Agent NixOS module (defines services.hermes-agent.*).
+    # Imported here rather than in ./services because that's where the flake
+    # `inputs` are in scope; the actual, scoped-down config lives in
+    # ./services/hermes.
+    hermes-agent.nixosModules.default
     # Service stack (Blocky, monitoring, Tailscale, Home Assistant). Built
     # natively on the Pi via `nixos-rebuild switch`; kept out of the very first
     # SD image so the bootstrap stayed minimal (just boot + SSH).

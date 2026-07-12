@@ -30,6 +30,13 @@
     # numtide cache rather than rebuilding against our pin.
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    # Hermes Agent (Nous Research) — self-hosted agent, run as a hardened
+    # systemd service on the Pi (see systems/pi/services/hermes). Deliberately
+    # NOT following our nixpkgs: it isn't in any binary cache (builds from
+    # source regardless) and pins its own nixpkgs its Python closure expects —
+    # forcing `follows` risks breaking that build for no cache benefit.
+    hermes-agent.url = "github:NousResearch/hermes-agent";
+
     flake-utils.url = "github:numtide/flake-utils";
 
     pre-commit-hooks = {

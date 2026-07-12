@@ -16,5 +16,6 @@
     ./jellyfin
     ./transmission
     ./www
+    ./hermes
   ];
 }
