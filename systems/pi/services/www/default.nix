@@ -59,6 +59,7 @@ let
           { name: "Grafana", port: 3000, note: "metrics & logs" },
           { name: "Jellyfin", port: 8096, note: "media" },
           { name: "Home Assistant", port: 8123, note: "home automation" },
+          { name: "Mealie", port: 9000, note: "recipes & meal planning" },
           { name: "Transmission", port: 9091, note: "downloads · Tailscale only" }
         ];
         var ul = document.getElementById("services");
