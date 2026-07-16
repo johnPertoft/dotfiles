@@ -16,6 +16,9 @@ trap 'rm -rf "$STATE_DIR"' EXIT
 RG_QUERY="$STATE_DIR/rg-query"
 FZF_QUERY="$STATE_DIR/fzf-query"
 
+# The preview/transform strings are evaluated by fzf's own subshell, not here,
+# so intentional literal '$vars' inside them are fine.
+# shellcheck disable=SC2016
 fzf --ansi --disabled --query "$INITIAL_QUERY" \
 	--prompt 'rg lines> ' \
 	--header '^T: rg/fzf | ^G: lines/files | ?: preview' \
@@ -38,8 +41,8 @@ fzf --ansi --disabled --query "$INITIAL_QUERY" \
       else
         echo \"change-prompt(\$m files> )+reload($RG_FILES {q})\"
       fi" \
-	--preview 'BAT_THEME=ansi bat --color=always {1} --highlight-line {2} --style=plain' \
-	--preview-window '+{2}+3/3,~3' \
+	--preview 'f={1}; l={2}; if [ -n "$l" ]; then s=$(( l > 10 ? l - 10 : 1 )); BAT_THEME=ansi bat --color=always --style=plain --highlight-line "$l" --line-range "$s:" "$f"; else BAT_THEME=ansi bat --color=always --style=plain "$f"; fi' \
+	--preview-window '~3' \
 	--bind 'focus:transform-preview-label:echo {1}' \
 	--bind '?:toggle-preview' \
 	--bind 'enter:become(vim {1} +{2})'
