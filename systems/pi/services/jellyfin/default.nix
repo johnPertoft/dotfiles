@@ -4,10 +4,9 @@
   # Media server. Runs as the `jellyfin` user; library data lives in
   # /var/lib/jellyfin and the transcode/cache in /var/cache/jellyfin.
   #
-  # The cache is left on disk rather than a tmpfs (the reference used a tmpfs to
-  # spare an SD card): this Pi boots from a 1 TB SSD and only has 4 GB RAM
-  # shared with the other services, so a multi-GB transcode cache in RAM would
-  # risk OOM.
+  # The cache is left on disk rather than a tmpfs, this Pi boots from a 1 TB SSD
+  # and only has 4 GB RAM shared with the other services, so a multi-GB transcode
+  # cache in RAM would risk OOM.
   services.jellyfin.enable = true;
 
   # Declarative media layout. One folder per library type under /srv/media.
