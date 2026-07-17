@@ -38,6 +38,13 @@
     }
     zle -N fzf-open
     bindkey '^P' fzf-open
+
+    fzf-blame() {
+      ${self.packages.${pkgs.stdenv.hostPlatform.system}.fzf-git-blame}/bin/fzf-git-blame "$BUFFER"
+      zle reset-prompt
+    }
+    zle -N fzf-blame
+    bindkey '^B' fzf-blame
   '';
 
   programs.bash.initExtra = ''
@@ -50,5 +57,10 @@
         ${self.packages.${pkgs.stdenv.hostPlatform.system}.fzf-open}/bin/fzf-open "$READLINE_LINE"
     }
     bind -x '"\C-p": fzf-open'
+
+    fzf-blame() {
+        ${self.packages.${pkgs.stdenv.hostPlatform.system}.fzf-git-blame}/bin/fzf-git-blame "$READLINE_LINE"
+    }
+    bind -x '"\C-b": fzf-blame'
   '';
 }
