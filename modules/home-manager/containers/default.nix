@@ -1,4 +1,5 @@
 { pkgs
+, self
 , ...
 }:
 {
@@ -16,5 +17,6 @@
     minikube
     podman
     skaffold
+    self.packages.${stdenv.hostPlatform.system}.fzf-k8s
   ];
 }
