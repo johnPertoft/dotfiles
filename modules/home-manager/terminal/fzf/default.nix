@@ -18,6 +18,7 @@
     fzf-git-sh
     bat
     self.packages.${pkgs.stdenv.hostPlatform.system}.fzf-open
+    self.packages.${pkgs.stdenv.hostPlatform.system}.fzf-jq
   ];
 
   #home.shellAliases = {
