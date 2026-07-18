@@ -9,7 +9,8 @@
 # - Enter: print the RESULT to stdout (so `fzf-jq f.json > out.json` works);
 #   the filter used is echoed to stderr so you can see/reuse it.
 # - CTRL-O: page the current output in less.
-# - CTRL-Y: copy the current filter to the clipboard (macOS pbcopy).
+# - CTRL-Y: copy the current filter to the clipboard, using whichever tool is
+#   present (pbcopy/wl-copy/xclip/xsel); a no-op if none is installed.
 
 # jq must re-read the input on every keystroke, so materialize it to a file
 # (a stdin pipe can only be consumed once).
@@ -35,4 +36,4 @@ echo | fzf --disabled --query '.' \
 	--bind 'change:refresh-preview' \
 	--bind 'enter:become(printf "jq %s\n" {q} >&2; jq {q} "$INPUT")' \
 	--bind 'ctrl-o:execute:jq --color-output {q} "$INPUT" 2>&1 | less -R' \
-	--bind 'ctrl-y:execute-silent(printf %s {q} | pbcopy)'
+	--bind 'ctrl-y:execute-silent(printf %s {q} | { pbcopy || wl-copy || xclip -selection clipboard || xsel -b; } 2>/dev/null)'
