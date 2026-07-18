@@ -62,7 +62,8 @@
   programs.gitui.enable = true;
 
   home.packages = with pkgs; [
-    commitizen
+    # Temporarily disabled: commitizen 4.13.9 fails its build-time test suite
+    # (test_invalid_command) against Python 3.13's argparse.
     git-filter-repo
     spr
   ];
