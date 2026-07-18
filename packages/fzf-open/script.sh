@@ -3,6 +3,11 @@
 # Run fzf to select a path.
 query=${1:-""}
 match=$(fd --color=always | fzf --query="$query" --no-multi --ansi)
+
+# fzf preserves the ANSI color codes from `fd --color=always` in its output
+# (visible on colored entries like directories/symlinks), so strip them —
+# otherwise the escape sequences corrupt the path passed to the commands below.
+match=$(printf '%s' "$match" | sed "s/$(printf '\033')\[[0-9;]*m//g")
 echo "Selected: $match"
 
 # Get the MIME type of the selected path.
