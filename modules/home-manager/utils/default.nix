@@ -1,4 +1,5 @@
 { pkgs
+, self
 , ...
 }:
 {
@@ -6,6 +7,7 @@
   # config beyond their package, grouped here to keep the home module a
   # lean profile base.
   home.packages = with pkgs; [
+    self.packages.${pkgs.stdenv.hostPlatform.system}.extract
     autossh
     coreutils-full
     curl
