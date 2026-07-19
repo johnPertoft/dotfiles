@@ -1,6 +1,7 @@
 { pkgs
 , lib
 , llm-agents
+, self
 , ...
 }:
 let
@@ -29,6 +30,10 @@ in
     # module, so it can't opt into the shared MCP servers via
     # enableMcpIntegration. Configure MCP for it manually if needed.
     agents.pi
+
+    # ai: one-shot terminal prompt wrapping `claude -p` (reuses its login,
+    # MCP off, terse output). Lives here alongside the agent CLIs it shells out to.
+    self.packages.${pkgs.stdenv.hostPlatform.system}.ai
   ];
 
   # Shared MCP servers, defined once and fanned out to every client below
