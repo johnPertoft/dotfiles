@@ -8,8 +8,8 @@ let
   # hardcoded, because the page is reachable both ways: over the LAN as
   # `thinkcentre.local` and over Tailscale as `thinkcentre` (MagicDNS).
   # Transmission's :9091 is Tailscale-only (not on the LAN firewall), so its
-  # link is expected to be dead on the LAN — hence the label. Grafana lives on
-  # the Pi, not here, so it's intentionally absent from this list.
+  # link is expected to be dead on the LAN — hence the label. Grafana isn't
+  # hosted on this box, so it's intentionally absent from this list.
   homepage = pkgs.writeTextDir "index.html" ''
     <!DOCTYPE html>
     <html lang="en">

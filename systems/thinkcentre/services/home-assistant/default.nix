@@ -6,8 +6,8 @@
   # config under /var/lib/home-assistant and persists it there — set it up via
   # the web UI at http://thinkcentre.local:8123.
   #
-  # Moved here from the Pi. If you later attach USB Zigbee/Z-Wave/Bluetooth
-  # radios to this box, pass them through by adding e.g.
+  # If you later attach USB Zigbee/Z-Wave/Bluetooth radios to this box, pass
+  # them through by adding e.g.
   #   devices = [ "/dev/ttyUSB0:/dev/ttyUSB0" ];
   # (or the stable /dev/serial/by-id path) and matching udev access.
   #

@@ -6,8 +6,8 @@ nixpkgs.lib.nixosSystem {
     ./configuration.nix
     ./hardware-configuration.nix
     # Service stack (Tailscale, Blocky, Jellyfin, Transmission, Mealie, Home
-    # Assistant, the monitoring client, and the www landing page). Mirrors the
-    # Pi's layout: one module per service, aggregated by ./services.
+    # Assistant, the monitoring client, and the www landing page): one module
+    # per service, aggregated by ./services.
     ./services
     self.modules.default
     self.nixosModules.default

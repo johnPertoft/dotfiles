@@ -5,14 +5,13 @@
 }:
 
 {
-  # Lenovo ThinkCentre — headless x86_64 homelab box that takes over most of the
-  # Pi's duties (media/transcoding, downloads, recipes, home automation, DNS
-  # adblocking) plus more compute headroom. Managed the same way as the Pi:
-  # key-only SSH, declarative users, rebuilt with `nixos-rebuild switch`.
+  # Lenovo ThinkCentre — headless x86_64 homelab server: media (HW-transcoded
+  # Jellyfin), downloads, recipes, home automation, and DNS adblocking, with
+  # room for the future *arr stack. Key-only SSH, declarative users, rebuilt
+  # with `nixos-rebuild switch`.
   #
-  # Unlike the Pi this is a normal UEFI x86_64 install (systemd-boot, wired
-  # Ethernet via DHCP) — see hardware-configuration.nix for the disk/boot layout
-  # once the machine exists.
+  # A normal UEFI x86_64 install (systemd-boot, wired Ethernet via DHCP) — see
+  # hardware-configuration.nix for the disk/boot layout once the machine exists.
 
   hardware.enableRedistributableFirmware = true;
 
@@ -25,9 +24,9 @@
   networking = {
     hostName = "thinkcentre";
 
-    # Wired Ethernet, address from DHCP for now. When this box takes over the
-    # Pi's role it'll move to the static LAN IP 192.168.0.2 (and the Pi moves
-    # off it) — deferred until the cutover, see README.
+    # Wired Ethernet, address from DHCP for now. It'll move to the static LAN IP
+    # 192.168.0.2 (the address clients/router point DNS at) at cutover —
+    # deferred, see README.
     useDHCP = lib.mkDefault true;
 
     # SSH (22) is opened by the openssh module; service ports live in each
@@ -58,10 +57,10 @@
       isNormalUser = true;
       extraGroups = [ "wheel" ];
       openssh.authorizedKeys.keyFiles = [
-        # TODO: this is the *work* key (john.pertoft@king.com) reused from the
-        # Pi and is the SOLE way onto the box (key-only SSH). Swap it for a
-        # personal keypair — additively, to avoid lockout: add the new key,
-        # rebuild, verify it logs in, then remove this one.
+        # TODO: this is the *work* key (john.pertoft@king.com) and is the SOLE
+        # way onto the box (key-only SSH). Swap it for a personal keypair —
+        # additively, to avoid lockout: add the new key, rebuild, verify it logs
+        # in, then remove this one.
         ./john.pertoft.pub
       ];
     };
@@ -69,8 +68,8 @@
 
   # Passwordless sudo for wheel. The accounts are key-only (no password, no
   # console login), so the SSH private key is already the root credential —
-  # passwordless sudo doesn't meaningfully widen access. (On x86_64 we could run
-  # pam_ssh_agent_auth properly, unlike the aarch64 Pi; revisit if wanted.)
+  # passwordless sudo doesn't meaningfully widen access. (Could switch to
+  # pam_ssh_agent_auth on x86_64 later if wanted.)
   security.sudo.wheelNeedsPassword = false;
 
   services.avahi = {

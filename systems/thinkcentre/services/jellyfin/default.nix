@@ -6,7 +6,7 @@
   services.jellyfin.enable = true;
 
   # ── Intel hardware transcoding (iGPU: Intel UHD Graphics) ────────────────────
-  # The whole reason this moved off the Pi. Nix's job is only to provide the
+  # The whole point of this box. Nix's job is only to provide the
   # VAAPI/QSV drivers and give Jellyfin access to the render node — the actual
   # "enable HW acceleration" toggle is set at RUNTIME in Jellyfin's admin UI
   # (Dashboard → Playback → Transcoding → VA-API or QSV, device /dev/dri/renderD128).

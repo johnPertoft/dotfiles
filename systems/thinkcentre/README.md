@@ -1,13 +1,12 @@
 # Lenovo ThinkCentre (NixOS)
 
-Headless x86_64 homelab box that takes over most of the Pi's duties, with more
-compute for **hardware-transcoded** Jellyfin (Intel iGPU) plus room for the
-future \*arr stack. Hostname `thinkcentre`, reachable as `thinkcentre.local`
+Headless x86_64 homelab server — media (**hardware-transcoded** Jellyfin, Intel
+iGPU), downloads, recipes, home automation, and DNS adblocking, with room for
+the future \*arr stack. Hostname `thinkcentre`, reachable as `thinkcentre.local`
 (mDNS) or over Tailscale (`thinkcentre`).
 
-Managed exactly like the Pi: key-only SSH, declarative users, rebuilt with
-`nixos-rebuild switch` — but this is a normal UEFI x86_64 install (systemd-boot,
-wired Ethernet via DHCP), not an SD image.
+Key-only SSH, declarative users, rebuilt with `nixos-rebuild switch`. A normal
+UEFI x86_64 install (systemd-boot, wired Ethernet via DHCP).
 
 ## Status: config-only, no hardware yet
 
@@ -19,10 +18,11 @@ nothing real.
 Services enabled here: **Tailscale, Blocky (DNS adblock), Jellyfin (HW
 transcode), Transmission, Mealie, Home Assistant, a monitoring client
 (node-exporter + Alloy), and a www landing page.** The Prometheus/Loki/Grafana
-**hub stays on the Pi** — this box is a monitoring _client_.
+**hub lives on another host** — this box is a monitoring _client_.
 
-Nothing on the Pi is changed by this config; it's purely additive. Blocky/HA/etc.
-run on both boxes during migration and the Pi's copies get retired at cutover.
+This config is purely additive and changes nothing on the existing homelab host;
+overlapping services (Blocky, Home Assistant, …) run in parallel during
+migration and the old copies are retired at cutover.
 
 ## First install (once the hardware arrives)
 
@@ -78,13 +78,13 @@ nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-hos
 ## Outstanding TODOs / cutover work (all deferred)
 
 - **Real `hardware-configuration.nix`** — replace the placeholder (see above).
-- **Swap the SSH key** — reuses the Pi's _work_ key (`john.pertoft@king.com`),
-  the sole way onto the box. Swap for a personal key additively (add → verify →
+- **Swap the SSH key** — currently the _work_ key (`john.pertoft@king.com`), the
+  sole way onto the box. Swap for a personal key additively (add → verify →
   remove) to avoid lockout.
-- **DNS cutover** — move this box to the static `192.168.0.2` and retire the
-  Pi's Blocky (re-point router/clients). Until then two Blocky instances coexist.
-- **Monitoring hub wiring** — the Pi must expose Loki to accept this box's Alloy
-  pushes and add a `thinkcentre:9100` scrape target. That's a _Pi-side_ edit,
-  intentionally not done here. See `services/monitoring/default.nix`.
-- **Shared modules** — the service modules were copied from the Pi rather than
-  factored out; dedupe once both boxes are settled.
+- **DNS cutover** — move this box to the static `192.168.0.2` and retire the old
+  Blocky instance (re-point router/clients). Until then the two coexist.
+- **Monitoring hub wiring** — the hub host must expose Loki to accept this box's
+  Alloy pushes and add a `thinkcentre:9100` scrape target. Deferred; see
+  `services/monitoring/default.nix`.
+- **Shared modules** — the service modules are copied rather than factored into a
+  shared set; dedupe across hosts once things settle.

@@ -1,11 +1,10 @@
 { ... }:
 
 {
-  # Network-wide DNS ad/tracker blocking. Runs here alongside the Pi's Blocky
-  # for now (each on its own IP, no conflict). At cutover this box takes the
-  # static LAN IP 192.168.0.2 that clients/router point DNS at, and the Pi's
-  # Blocky is retired — deferred, see README. Metrics are exported on the HTTP
-  # port below (scraped by the Pi's Prometheus once ./monitoring is wired up).
+  # Network-wide DNS ad/tracker blocking. At cutover this box takes the static
+  # LAN IP 192.168.0.2 that clients/router point DNS at (deferred, see README);
+  # until then it just serves on its DHCP address. Metrics are exported on the
+  # HTTP port below (scraped by the monitoring host once ./monitoring is wired).
   services.blocky = {
     enable = true;
     settings = {
