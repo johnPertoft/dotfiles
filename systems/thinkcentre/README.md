@@ -64,17 +64,38 @@ Both are easy to forget and both fail silently-ish:
 ## Verify Intel transcoding
 
 Nix provides the drivers + render-node access; the **HW-accel toggle itself is
-set at runtime** in Jellyfin's admin UI (Dashboard → Playback → Transcoding →
-VA-API or QSV, device `/dev/dri/renderD128`).
+set at runtime** in Jellyfin's admin UI (Dashboard → Playback → Transcoding).
+
+Use **VA-API**, device `/dev/dri/renderD128`. Not QSV — see below.
+
+The iGPU is an **Intel UHD Graphics 630 (CometLake-S GT2, Gen9.5)**. Verified
+working: `h264_vaapi` and `hevc_vaapi` encode, and decode of H264, HEVC
+Main/Main10, VP9 profile 0/2, VP8, MPEG2, VC1. Known not to work, both because
+the silicon is older than the "UHD 6xx" name suggests:
+
+- **QSV** — oneVPL is Gen12/Xe-era and fails with `Error initializing an MFX
+session: -3`. Use VA-API.
+- **AV1 decode** — not present in this GPU at all.
+
+Re-verify as the `jellyfin` user (running as yourself can mask a group problem),
+using Jellyfin's own ffmpeg:
 
 ```sh
-nix-shell -p pciutils --run 'lspci -nn | grep -i vga'   # confirm the iGPU / gen
-nix-shell -p libva-utils --run vainfo                   # should list H264/HEVC VAProfiles via iHD
-ls -l /dev/dri/renderD128                                # exists, group `render`
+sudo -u jellyfin nix-shell -p libva-utils --run vainfo   # iHD driver, H264/HEVC VAProfiles
+ls -l /dev/dri/renderD128                               # exists, group `render`
+id jellyfin                                             # must include render + video
+
+FF=$(ls -d /nix/store/*jellyfin-ffmpeg*-bin/bin/ffmpeg | head -1)
+sudo -u jellyfin $FF -init_hw_device vaapi=va:/dev/dri/renderD128 -filter_hw_device va \
+  -f lavfi -i testsrc=size=1280x720:rate=30 -t 2 -vf format=nv12,hwupload \
+  -c:v h264_vaapi -f null -                             # a real HW encode
+sudo -u jellyfin $FF -init_hw_device opencl=ocl -f lavfi -i testsrc -t 0.1 -f null -
 ```
 
-If it's a pre-Broadwell part (unlikely for "UHD"), swap `intel-media-driver` →
-`intel-vaapi-driver` in `services/jellyfin/default.nix`.
+That last one gates **HDR→SDR tonemapping**. It needs
+`intel-compute-runtime-legacy1`; the non-legacy `intel-compute-runtime` supports
+12th Gen and newer only and fails here with
+`Failed to get number of OpenCL platforms: -1001`.
 
 ## Test the service stack in a VM
 
