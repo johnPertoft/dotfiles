@@ -6,14 +6,13 @@ the future \*arr stack. Hostname `thinkcentre`, reachable as `thinkcentre.local`
 (mDNS) or over Tailscale (`thinkcentre`).
 
 Key-only SSH, declarative users, rebuilt with `nixos-rebuild switch`. A normal
-UEFI x86_64 install (systemd-boot, wired Ethernet via DHCP).
+UEFI x86_64 install (systemd-boot, static wired Ethernet on `192.168.0.3`).
 
-## Status: config-only, no hardware yet
+## Status: deployed
 
-The machine isn't physically here. Everything is committed **except the real
-`hardware-configuration.nix`** — that file is a **placeholder** so the flake
-still evaluates (CI runs `nix flake check`). It has a fake root FS and does
-nothing real.
+The machine is here, installed, and on the LAN at `192.168.0.3` (static, wired
+`eno2`) with Tailscale up. `hardware-configuration.nix` is the real generated
+one.
 
 Services enabled here: **Tailscale, Blocky (DNS adblock), Jellyfin (HW
 transcode), Transmission, Mealie, Home Assistant, a monitoring client
@@ -24,16 +23,32 @@ This config is purely additive and changes nothing on the existing homelab host;
 overlapping services (Blocky, Home Assistant, …) run in parallel during
 migration and the old copies are retired at cutover.
 
-## First install (once the hardware arrives)
+### Two bits of required state that live outside the repo
+
+Both are easy to forget and both fail silently-ish:
+
+- **`/etc/nixos-secrets/john.pw`** — `users.users.john.hashedPasswordFile` reads
+  it on _every_ activation, and `users.mutableUsers = false` means there's no
+  fallback: if the file is missing, `john` gets no password and there is no
+  console login at all. Seed it as root with
+  `mkpasswd -m sha-512 > /etc/nixos-secrets/john.pw && chmod 0600` (the hash is
+  deliberately not committed — this repo is public and `$6$` is offline-crackable).
+- **A network path for the _first_ switch.** Nothing here enables NetworkManager
+  or wpa_supplicant, so a machine that is online only over WiFi will drop off
+  the network the moment it activates this config. Have Ethernet plugged in, or
+  bring your own temporary link (USB tethering works — but note `useDHCP` is
+  `false`, so a temporary interface needs its own config).
+
+## Reinstalling from scratch
 
 1. Boot the NixOS installer, partition + mount the disk (GPT: an EFI system
    partition at `/mnt/boot`, ext4 root at `/mnt`).
-2. **Generate the real hardware config** and overwrite the placeholder:
+2. Regenerate `hardware-configuration.nix` if the disks changed:
 
    ```sh
    sudo nixos-generate-config --root /mnt
    # copy the generated systems/thinkcentre/hardware-configuration.nix into a
-   # checkout of this repo, replacing the placeholder, and commit it.
+   # checkout of this repo and commit it.
    ```
 
 3. Install against this flake:
@@ -42,7 +57,8 @@ migration and the old copies are retired at cutover.
    sudo nixos-install --flake github:johnPertoft/dotfiles#thinkcentre
    ```
 
-4. Reboot, then `ssh john@thinkcentre.local` (your key is authorized), and
+4. Seed `/etc/nixos-secrets/john.pw` (see above) **before** the first switch.
+5. Reboot, then `ssh john@thinkcentre.local` (your key is authorized), and
    `sudo tailscale up` once to join the tailnet.
 
 ## Verify Intel transcoding
@@ -60,7 +76,7 @@ ls -l /dev/dri/renderD128                                # exists, group `render
 If it's a pre-Broadwell part (unlikely for "UHD"), swap `intel-media-driver` →
 `intel-vaapi-driver` in `services/jellyfin/default.nix`.
 
-## Test in a VM before the hardware exists
+## Test the service stack in a VM
 
 ```sh
 nixos-rebuild build-vm --flake .#thinkcentre
@@ -77,12 +93,12 @@ nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-hos
 
 ## Outstanding TODOs / cutover work (all deferred)
 
-- **Real `hardware-configuration.nix`** — replace the placeholder (see above).
-- **Swap the SSH key** — currently the _work_ key (`john.pertoft@king.com`), the
-  sole way onto the box. Swap for a personal key additively (add → verify →
-  remove) to avoid lockout.
-- **DNS cutover** — move this box to the static `192.168.0.2` and retire the old
-  Blocky instance (re-point router/clients). Until then the two coexist.
+- **Swap the SSH key** — currently the _work_ key (`john.pertoft@king.com`).
+  Swap for a personal key additively (add → verify → remove) to avoid lockout.
+- **DNS cutover** — move this box from `192.168.0.3` to `192.168.0.2` and retire
+  the Pi's Blocky (re-point router/clients). Until then the two coexist. The
+  address is a one-line change in `configuration.nix`; the Pi has to give
+  `.2` up first.
 - **Monitoring hub wiring** — the hub host must expose Loki to accept this box's
   Alloy pushes and add a `thinkcentre:9100` scrape target. Deferred; see
   `services/monitoring/default.nix`.

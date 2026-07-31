@@ -24,17 +24,44 @@
   networking = {
     hostName = "thinkcentre";
 
-    # Wired Ethernet, address from DHCP for now. It'll move to the static LAN IP
-    # 192.168.0.2 (the address clients/router point DNS at) at cutover —
-    # deferred, see README.
-    useDHCP = lib.mkDefault true;
+    # Wired-only, static — the Pi's pattern (systems/pi/configuration.nix:55-75)
+    # minus the wireless half. Static rather than DHCP because this box serves
+    # LAN DNS: Blocky's address is what the router and clients point at, so it
+    # can't be allowed to move with a lease.
+    #
+    # `eno2` is the onboard NIC (verified on the box with `ip -br link` — note
+    # it is eno2, not eno1). The WiFi card (wlo1) is deliberately left
+    # unconfigured: nothing here enables NetworkManager or wpa_supplicant, so
+    # there is NO wireless fallback. If the Ethernet run dies, recovery is at
+    # the console. During bring-up the box ran on the installer's
+    # NetworkManager WiFi profile; this replaces it.
+    #
+    # .3 for now. It moves to .2 at DNS cutover, once the Pi's Blocky is retired
+    # and the router/clients are re-pointed here — see README.
+    interfaces."eno2".ipv4.addresses = [
+      {
+        address = "192.168.0.3";
+        prefixLength = 24;
+      }
+    ];
 
-    # TEMPORARY: the box came up on WiFi (the installer's NetworkManager
-    # profile), and the server module enables neither NetworkManager nor
-    # wpa_supplicant — so the first switch dropped it off the network. Enabled
-    # here to get it reachable again. Replaced by a static wired block (the
-    # Pi's pattern) once the Ethernet run is permanent.
-    networkmanager.enable = true;
+    defaultGateway = {
+      address = "192.168.0.1";
+      interface = "eno2";
+    };
+
+    # Every interface is either statically addressed or deliberately unused, so
+    # there is nothing for dhcpcd to do — without this it would also keep
+    # retrying on the unconfigured WiFi card.
+    useDHCP = false;
+
+    # With a static address there's no DHCP to hand us a resolver, so set one
+    # explicitly or /etc/resolv.conf ends up empty and name resolution breaks
+    # (routing still works, so you can ping 8.8.8.8 but not resolve hosts).
+    # Public resolvers keep DNS decoupled from Blocky during bring-up; once
+    # Blocky is confirmed healthy you can prepend "127.0.0.1" to route this
+    # box's own lookups through the adblocker too.
+    nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
     # SSH (22) is opened by the openssh module; service ports live in each
     # service's own module under ./services.

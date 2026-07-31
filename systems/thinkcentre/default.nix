@@ -13,10 +13,10 @@ nixpkgs.lib.nixosSystem {
     self.nixosModules.default
     self.nixosModules.server
     {
-      # Smoke-test the config in a QEMU VM before the real hardware exists, e.g.
+      # Smoke-test the service stack in a QEMU VM, e.g.
       #   nixos-rebuild build-vm --flake .#thinkcentre && ./result/bin/run-*-vm
-      # The vmVariant supplies its own disk/boot, so the placeholder root FS in
-      # hardware-configuration.nix is irrelevant here.
+      # The vmVariant supplies its own disk/boot and networking, so the real
+      # host's fileSystems and static IP don't apply here.
       virtualisation.vmVariant = {
         virtualisation.memorySize = 4 * 1024; # 4 GB
         virtualisation.diskSize = 16 * 1024; # 16 GB
