@@ -29,6 +29,13 @@
     # deferred, see README.
     useDHCP = lib.mkDefault true;
 
+    # TEMPORARY: the box came up on WiFi (the installer's NetworkManager
+    # profile), and the server module enables neither NetworkManager nor
+    # wpa_supplicant — so the first switch dropped it off the network. Enabled
+    # here to get it reachable again. Replaced by a static wired block (the
+    # Pi's pattern) once the Ethernet run is permanent.
+    networkmanager.enable = true;
+
     # SSH (22) is opened by the openssh module; service ports live in each
     # service's own module under ./services.
     firewall.allowedUDPPorts = [
@@ -56,6 +63,19 @@
     john = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
+      # `users.mutableUsers = false` (modules/nixos/server.nix) wipes any
+      # imperative password on activation, so without a password option there
+      # is no console login at all and the SSH key below is the only way in.
+      #
+      # The hash lives on the box, NOT in this (public) repo — a $6$ hash is
+      # offline-crackable once published, and git history is forever. Seed it
+      # with, as root:
+      #   mkdir -p /etc/nixos-secrets
+      #   mkpasswd -m sha-512 > /etc/nixos-secrets/john.pw
+      #   chmod 0600 /etc/nixos-secrets/john.pw
+      # The file is re-read on EVERY activation, so it must exist before the
+      # next `nixos-rebuild switch` or john ends up with no password at all.
+      hashedPasswordFile = "/etc/nixos-secrets/john.pw";
       openssh.authorizedKeys.keyFiles = [
         # TODO: this is the *work* key (john.pertoft@king.com) and is the SOLE
         # way onto the box (key-only SSH). Swap it for a personal keypair —
