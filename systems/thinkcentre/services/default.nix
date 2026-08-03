@@ -11,6 +11,8 @@
     ./blocky
     ./jellyfin
     ./transmission
+    ./sonarr
+    ./radarr
     ./mealie
     ./home-assistant
     ./monitoring

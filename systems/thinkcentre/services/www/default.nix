@@ -58,7 +58,9 @@ let
           { name: "Jellyfin", port: 8096, note: "media" },
           { name: "Home Assistant", port: 8123, note: "home automation" },
           { name: "Mealie", port: 9000, note: "recipes & meal planning" },
-          { name: "Transmission", port: 9091, note: "downloads · Tailscale only" }
+          { name: "Transmission", port: 9091, note: "downloads · Tailscale only" },
+          { name: "Sonarr", port: 8989, note: "TV shows · Tailscale only" },
+          { name: "Radarr", port: 7878, note: "movies · Tailscale only" }
         ];
         var ul = document.getElementById("services");
         services.forEach(function (s) {
