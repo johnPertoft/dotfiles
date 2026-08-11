@@ -167,7 +167,7 @@ in
 
       enableMcpIntegration = true;
 
-      settings.approval_policy = "never";
+      settings.approval_policy = "on-request";
     };
 
     # gemini-cli was renamed upstream to antigravity-cli (Google rebrand).
