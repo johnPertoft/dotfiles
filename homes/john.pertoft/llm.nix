@@ -5,9 +5,11 @@
 let
   # Same auto-discovery pattern as modules/home-manager/llm. Skills here
   # merge with the shared ones via attrset merging in nix's module system.
-  discoverSkills = dir:
-    lib.mapAttrs (name: _: dir + "/${name}")
-      (lib.filterAttrs (_: v: v == "directory") (builtins.readDir dir));
+  discoverSkills =
+    dir:
+    lib.mapAttrs (name: _: dir + "/${name}") (
+      lib.filterAttrs (_: v: v == "directory") (builtins.readDir dir)
+    );
 
   # TODO: re-enable once CI can evaluate this without a VPN. The
   # internal King marketplace lives behind github.int.midasplayer.com,
@@ -35,5 +37,17 @@ in
     # plugins = [
     #   "${ai-engineering-marketplace}/plugins/git-worktree-create"
     # ];
+  };
+
+  # Work-specific Claude Code settings merged on top of the shared settings
+  # defined in modules/home-manager/llm. The shared module's activation script
+  # picks these up at eval time via config.programs.claude-code.extraSettings.
+  programs.claude-code.extraSettings.extraKnownMarketplaces = {
+    ai-engineering-marketplace = {
+      source = {
+        source = "git";
+        url = "git@github.int.midasplayer.com:ai-ml/ai-engineering-marketplace.git";
+      };
+    };
   };
 }
