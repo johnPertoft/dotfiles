@@ -66,8 +66,8 @@ let
   ' '';
 
   # yq-based merge for TOML config files.
-  # `.` = nix (first arg), `input` = live (second arg); right side (*) wins.
-  yqTomlMerge = "${lib.getExe pkgs.yq-go} eval-all --input-format=toml --output-format=toml 'input * .'";
+  # fi==0 = nix (first arg), fi==1 = live (second arg); right side (*) wins.
+  yqTomlMerge = "${lib.getExe pkgs.yq-go} ea --input-format=toml --output-format=toml 'select(fi==1) * select(fi==0)'";
 
   # Claude Code: merge shared settings + host-specific extraSettings into one JSON.
   claudeNixSettings =
