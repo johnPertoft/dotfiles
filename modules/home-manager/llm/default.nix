@@ -61,6 +61,11 @@ in
 
     enableMcpIntegration = true;
 
+    settings.statusLine = {
+      type = "command";
+      command = "input=$(cat); dir=$(echo \"$input\" | jq -r '.workspace.current_dir'); display=\"\${dir/$HOME/~}\"; display=$(echo \"$display\" | awk -F'/' '{parts=0; for(i=1;i<=NF;i++) if($i!=\"\") parts++; if(parts>3){p=\"\"; c=0; for(i=NF;i>=1;i--) if($i!=\"\"){p=\"/\"$i p; if(++c==3)break}; print \"...\"p} else print $0}'); branch=$(git --no-optional-locks -C \"$dir\" symbolic-ref --short HEAD 2>/dev/null); dirty=\"\"; git --no-optional-locks -C \"$dir\" status --porcelain 2>/dev/null | grep -q . && dirty=\"!\"; model=$(echo \"$input\" | jq -r '.model.display_name'); used=$(echo \"$input\" | jq -r '.context_window.used_percentage // empty'); [ -n \"$used\" ] && printf \"\\033[1;33m[ctx:%.0f%%]\\033[0m \" \"$used\"; printf \"\\033[1;37m[%s]\\033[0m \" \"$model\"; printf \"\\033[1;36m[%s]\\033[0m \" \"$display\"; [ -n \"$branch\" ] && printf \"\\033[1;35m[%s%s]\\033[0m\" \"$branch\" \"$dirty\"";
+    };
+
     # TODO: codex and antigravity-cli also expose a `skills` option with
     # the same shape. Not sharing yet because skills often encode
     # agent-specific assumptions (e.g. "use the Plan tool") that don't
