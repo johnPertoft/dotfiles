@@ -19,10 +19,58 @@ let
     lib.mapAttrs (name: _: dir + "/${name}")
       (lib.filterAttrs (_: v: v == "directory") (builtins.readDir dir));
 
-  # Merge shared Nix settings with any host-specific extras contributed via
-  # myDotfiles.claudeSettingsExtra, then generate a store-path JSON for the
-  # activation script to merge into the live ~/.claude/settings.json.
-  nixSettingsFile =
+  # Returns a home.activation DAG entry that merges a Nix settings store-path
+  # into a mutable live config file on each switch. Nix wins on conflicts;
+  # keys absent from Nix survive untouched (e.g. theme, enabledPlugins).
+  #
+  # mergeCmd and diffCmd are shell snippets called as: cmd <nix-file> <live-file>
+  # In both, the right-hand side (nix) wins on conflicts.
+  mkMutableMerge =
+    { label       # shown in the diff header, e.g. "claude settings.json"
+    , nixFile     # store-path derivation of the Nix-managed settings
+    , liveFile    # absolute path string to the live mutable config file
+    , mergeCmd    # shell snippet: produces merged output on stdout
+    , diffCmd ? null  # shell snippet: produces overwrite report on stdout
+    }:
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      nix_src="${nixFile}"
+      live="${liveFile}"
+
+      if [ -f "$live" ] && [ ! -L "$live" ]; then
+        ${lib.optionalString (diffCmd != null) ''
+          overwritten=$(${diffCmd} "$nix_src" "$live")
+          if [ -n "$overwritten" ]; then
+            echo "${label}: Nix overwrote:"
+            echo "$overwritten"
+          fi
+        ''}
+        tmp="$live.tmp"
+        ${mergeCmd} "$nix_src" "$live" > "$tmp" \
+          && $DRY_RUN_CMD mv "$tmp" "$live" \
+          || rm -f "$tmp"
+      else
+        $DRY_RUN_CMD rm -f "$live"
+        $DRY_RUN_CMD install -Dm 644 "$nix_src" "$live"
+      fi
+    '';
+
+  # jq-based merge and diff for JSON config files.
+  # .[0] = nix (first arg), .[1] = live (second arg); right side wins in jq.
+  jqMerge = "${lib.getExe pkgs.jq} -s '.[1] * .[0]'";
+  jqDiff = ''${lib.getExe pkgs.jq} -sr '
+    .[0] as $nix | .[1] as $live |
+    [ $nix | to_entries[] |
+      select($live[.key] != null and ($live[.key] | tojson) != (.value | tojson)) |
+      "~ \(.key)\n-  \($live[.key] | tojson)\n+  \(.value | tojson)"
+    ] | .[]
+  ' '';
+
+  # yq-based merge for TOML config files.
+  # `.` = nix (first arg), `input` = live (second arg); right side (*) wins.
+  yqTomlMerge = "${lib.getExe pkgs.yq-go} eval-all --input-format=toml --output-format=toml 'input * .'";
+
+  # Claude Code: merge shared settings + host-specific extraSettings into one JSON.
+  claudeNixSettings =
     (pkgs.formats.json { }).generate "claude-settings.json"
       (lib.recursiveUpdate config.programs.claude-code.settings
         config.programs.claude-code.extraSettings);
@@ -113,50 +161,13 @@ in
       skills = discoverSkills ./skills;
     };
 
-    # Suppress the read-only symlink that programs.claude-code.settings would
-    # normally generate — the activation script below writes a mutable copy
-    # instead, so Claude Code can write back to it (e.g. /theme, permissions).
-    home.file."${config.programs.claude-code.configDir}/settings.json".enable =
-      lib.mkForce false;
-
-    # Merge Nix-managed settings into ~/.claude/settings.json on each switch.
-    # nixSettingsFile is the combined shared + host-specific settings baked
-    # into the store at eval time. jq's recursive * operator applies it with
-    # Nix as the right operand — Nix wins on conflicts, keys absent from Nix
-    # (e.g. theme) survive untouched. Arrays/scalars are replaced wholesale.
-    home.activation.mergeClaudeSettings =
-      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        settings="${config.home.homeDirectory}/.claude/settings.json"
-
-        if [ -f "$settings" ] && [ ! -L "$settings" ]; then
-          overwritten=$(${lib.getExe pkgs.jq} -sr '
-            .[0] as $nix | .[1] as $live |
-            [ $nix | to_entries[] |
-              select($live[.key] != null and ($live[.key] | tojson) != (.value | tojson)) |
-              "~ \(.key)\n-  \($live[.key] | tojson)\n+  \(.value | tojson)"
-            ] | .[]
-          ' "${nixSettingsFile}" "$settings")
-
-          if [ -n "$overwritten" ]; then
-            echo "claude settings.json: Nix overwrote:"
-            echo "$overwritten"
-          fi
-
-          tmp="$settings.tmp"
-          ${lib.getExe pkgs.jq} -s '.[1] * .[0]' "${nixSettingsFile}" "$settings" > "$tmp" \
-            && $DRY_RUN_CMD mv "$tmp" "$settings" \
-            || rm -f "$tmp"
-        else
-          $DRY_RUN_CMD rm -f "$settings"
-          $DRY_RUN_CMD install -Dm 644 "${nixSettingsFile}" "$settings"
-        fi
-      '';
-
     programs.codex = {
       enable = true;
       package = agents.codex;
 
       enableMcpIntegration = true;
+
+      settings.approval_policy = "auto";
     };
 
     # gemini-cli was renamed upstream to antigravity-cli (Google rebrand).
@@ -165,6 +176,29 @@ in
       package = agents.antigravity-cli;
 
       enableMcpIntegration = true;
+    };
+
+    # Suppress the read-only symlinks that the upstream modules would generate
+    # from settings/MCP integration — the activation scripts below write
+    # mutable copies instead, so tools can still write back to their configs.
+    home.file."${config.programs.claude-code.configDir}/settings.json".enable =
+      lib.mkForce false;
+    home.file.".codex/config.toml".enable =
+      lib.mkForce false;
+
+    home.activation.mergeClaudeSettings = mkMutableMerge {
+      label = "claude settings.json";
+      nixFile = claudeNixSettings;
+      liveFile = "${config.home.homeDirectory}/.claude/settings.json";
+      mergeCmd = jqMerge;
+      diffCmd = jqDiff;
+    };
+
+    home.activation.mergeCodexConfig = mkMutableMerge {
+      label = "codex config.toml";
+      nixFile = config.home.file.".codex/config.toml".source;
+      liveFile = "${config.home.homeDirectory}/.codex/config.toml";
+      mergeCmd = yqTomlMerge;
     };
   };
 }
