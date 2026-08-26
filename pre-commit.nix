@@ -1,5 +1,11 @@
-{ pre-commit-hooks, system, ... }: {
+{ nixpkgs, pre-commit-hooks, self, system, ... }:
+let
+  pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.pre-commit-no-tests-darwin;
+in
+{
   pre-commit-check = pre-commit-hooks.lib.${system}.run {
+    package = pkgs.pre-commit;
+
     src = ./.;
     hooks = {
       actionlint.enable = true;

@@ -12,6 +12,7 @@ home-manager.lib.homeManagerConfiguration {
     inherit system;
     overlays = [
       self.overlays.nixpkgs-unstable
+      self.overlays.pre-commit-no-tests-darwin
     ];
   };
   modules = (import ../common.nix inputs) ++ [
