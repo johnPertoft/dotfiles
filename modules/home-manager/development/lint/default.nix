@@ -6,12 +6,7 @@
   home.packages = with pkgs; [
     actionlint
     hadolint
-    (pre-commit.overridePythonAttrs (_: {
-      doCheck = false;
-      dontUsePytestCheck = true;
-      nativeCheckInputs = [ ];
-      preCheck = "";
-    }))
+    pre-commit
     shellcheck
   ];
 }

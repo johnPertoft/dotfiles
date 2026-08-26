@@ -1,15 +1,10 @@
-{ nixpkgs, pre-commit-hooks, system, ... }:
+{ nixpkgs, pre-commit-hooks, self, system, ... }:
 let
-  pkgs = nixpkgs.legacyPackages.${system};
+  pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.pre-commit-no-tests-darwin;
 in
 {
   pre-commit-check = pre-commit-hooks.lib.${system}.run {
-    package = pkgs.pre-commit.overridePythonAttrs (_: {
-      doCheck = false;
-      dontUsePytestCheck = true;
-      nativeCheckInputs = [ ];
-      preCheck = "";
-    });
+    package = pkgs.pre-commit;
 
     src = ./.;
     hooks = {
