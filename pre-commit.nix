@@ -1,6 +1,6 @@
 { nixpkgs, pre-commit-hooks, self, system, ... }:
 let
-  pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.pre-commit-no-tests-darwin;
+  pkgs = nixpkgs.legacyPackages.${system}.extend self.overlays.pre-commit-darwin;
 in
 {
   pre-commit-check = pre-commit-hooks.lib.${system}.run {
