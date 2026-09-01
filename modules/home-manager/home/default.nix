@@ -10,8 +10,6 @@
   home.sessionVariables = {
     EDITOR = "${config.home.homeDirectory}/.nix-profile/bin/vim";
     VISUAL = "${config.home.homeDirectory}/.nix-profile/bin/code";
-    #TODO This screws up SSH on macOS.
-    #SHELL = "fish";
   };
 
   # Register shell aliases.
