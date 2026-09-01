@@ -1,0 +1,5 @@
+.venv
+/dist
+/result
+.direnv
+__pycache__

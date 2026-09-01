@@ -1,0 +1,8 @@
+# Single source of truth for the Rust toolchain.
+# Change `channel` to pin a version: "stable", "beta", "nightly",
+# a dated nightly ("nightly-2025-01-01"), or an exact release ("1.89.0").
+[toolchain]
+channel = "stable"
+components = [ "rust-src", "rustfmt", "clippy" ]
+# Add cross-compilation targets here, e.g. "wasm32-unknown-unknown".
+targets = [ ]

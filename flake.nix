@@ -77,5 +77,7 @@
       modules = import ./modules inputs;
 
       overlays = import ./overlays inputs;
+
+      templates = import ./templates;
     };
 }
