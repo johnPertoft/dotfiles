@@ -99,6 +99,10 @@ in
       # enableMcpIntegration. Configure MCP for it manually if needed.
       agents.pi
 
+      # copilot-cli: GitHub Copilot in the terminal. No home-manager module
+      # in 26.05, so installed as a bare package (no MCP integration).
+      agents.copilot-cli
+
       # ai: one-shot terminal prompt wrapping `claude -p` (reuses its login,
       # MCP off, terse output). Lives here alongside the agent CLIs it shells out to.
       self.packages.${pkgs.stdenv.hostPlatform.system}.ai
