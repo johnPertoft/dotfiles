@@ -15,5 +15,6 @@
     ./home-assistant
     ./monitoring
     ./www
+    ./github-runner
   ];
 }

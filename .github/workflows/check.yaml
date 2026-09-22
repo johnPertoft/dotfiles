@@ -1,4 +1,10 @@
-on: push
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   check:
@@ -15,3 +21,27 @@ jobs:
 
       - name: Check flake evaluation
         run: nix flake check --keep-going
+
+  build-linux:
+    needs: check
+    if: >-
+      github.repository == 'johnPertoft/dotfiles' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+      vars.ENABLE_SELF_HOSTED_BUILDS == 'true'
+    runs-on: [self-hosted, linux, x64, nix, homelab]
+    timeout-minutes: 180
+    concurrency:
+      group: thinkcentre-linux-builds
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Build Linux systems
+        run: |
+          nix build --no-link --print-build-logs \
+            .#nixosConfigurations.thinkcentre.config.system.build.toplevel \
+            .#nixosConfigurations.home-desktop.config.system.build.toplevel
