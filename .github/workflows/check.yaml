@@ -78,6 +78,10 @@ jobs:
       cancel-in-progress: true
     env:
       BUILD_ATTR: ${{ matrix.attr }}
+      # cachix use writes user-level cache lists; append these after loading them.
+      NIX_CONFIG: |
+        extra-substituters = https://cache.numtide.com https://cache.nixos-cuda.org
+        extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g= cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -86,10 +90,6 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
-        with:
-          extra-conf: |
-            extra-substituters = https://cache.numtide.com
-            extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
 
       - name: Configure Cachix
         uses: cachix/cachix-action@v17
@@ -97,6 +97,9 @@ jobs:
           name: johnpertoft
           extraPullNames: nix-community,devenv
           skipPush: true
+
+      - name: Show effective binary caches
+        run: nix config show substituters
 
       - name: Require cache write token
         if: github.event_name == 'workflow_dispatch' && inputs.publish_cache && matrix.publish

@@ -64,6 +64,11 @@ actions or detection scripts. Each selected target is requested on every run,
 and Nix substitutes cached outputs where available. This deliberately avoids
 separate change-detection logic.
 
+CI appends the Numtide agent and CUDA caches through `NIX_CONFIG`, which is read
+after the user-level configuration written by the Cachix action. This keeps
+those caches available alongside Cachix rather than accidentally replacing them.
+The desktop uses the current CUDA cache at `https://cache.nixos-cuda.org`.
+
 All builds read public binary caches. Uploads remain explicitly opt-in through
 the `publish_cache` manual input and are still limited to the ThinkCentre row.
 The desktop and home closures include proprietary applications; review their
