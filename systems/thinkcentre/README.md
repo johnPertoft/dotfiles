@@ -112,6 +112,33 @@ sudo nixos-rebuild switch --flake github:johnPertoft/dotfiles#thinkcentre
 nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-host thinkcentre --use-remote-sudo
 ```
 
+## CI builds and Cachix
+
+The `build-thinkcentre` job in `.github/workflows/check.yaml` builds this system
+on a GitHub-hosted Ubuntu runner, after the existing flake checks succeed.
+It runs on `main` and the initial `fix/ci-build` branch. It does not activate
+the configuration or require an online ThinkCentre.
+
+Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
+also configure this cache and its public signing key for the hosts. Push-triggered
+builds are read-only and **do not upload** any store paths.
+
+To publish a successful system closure, create a Cachix write token scoped to
+`johnpertoft` and store it as the **repository Actions secret**
+`CACHIX_AUTH_TOKEN` (not an environment secret or a file in this repository).
+Then manually run the workflow with `publish_cache` enabled:
+
+```sh
+gh workflow run check.yaml --ref fix/ci-build -f publish_cache=true
+# After merging, use --ref main instead.
+```
+
+Publishing explicitly pushes the built system's runtime closure, rather than
+everything in the CI runner's store. Cachix skips paths already available from
+the official NixOS cache. No permanent pins are created by this initial workflow;
+normal Cachix garbage collection applies. The desktop and separate Home Manager
+configurations are not built or published by this job.
+
 ## Outstanding TODOs / cutover work (all deferred)
 
 - **Swap the SSH key** — currently the _work_ key (`john.pertoft@king.com`).
