@@ -125,8 +125,8 @@ Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
 also configure this cache and its public signing key for the hosts. Push-triggered
 builds are read-only and **do not upload** any store paths.
 
-To publish a successful system closure, create a Cachix write token scoped to
-`johnpertoft` and store it as the **repository Actions secret**
+To publish successful Linux system and desktop Home Manager closures, create a
+Cachix write token scoped to `johnpertoft` and store it as the **repository Actions secret**
 `CACHIX_AUTH_TOKEN` (not an environment secret or a file in this repository).
 Then manually run the workflow with `publish_cache` enabled:
 
@@ -135,12 +135,14 @@ gh workflow run check.yaml --ref fix/ci-build -f publish_cache=true
 # After merging, use --ref main instead.
 ```
 
-Publishing explicitly pushes the built system's runtime closure, rather than
-everything in the CI runner's store. Cachix skips paths already available from
-the official NixOS cache. No permanent pins are created by this initial workflow;
-normal Cachix garbage collection applies. Other matrix targets are built but
-are not published to the public cache until their redistribution terms and
-storage requirements have been reviewed.
+Publishing explicitly pushes the runtime closures of the ThinkCentre system,
+desktop system, and desktop Home Manager output, rather than everything in the
+CI runner's store. Cachix skips paths already in the destination or the official
+NixOS cache, but may duplicate dependencies from other caches, including CUDA
+and Numtide. No permanent pins are created; normal Cachix garbage collection
+applies. Desktop closures contain proprietary applications, so public uploads
+require redistribution permission and may exceed the free storage allowance.
+The MacBook matrix targets are built but are not published.
 
 ## Outstanding TODOs / cutover work (all deferred)
 

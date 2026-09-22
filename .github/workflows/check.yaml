@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_cache:
-        description: Publish the ThinkCentre system closure to Cachix
+        description: Publish the ThinkCentre and desktop system/home closures to Cachix
         type: boolean
         default: false
 
@@ -57,11 +57,11 @@ jobs:
           - name: Desktop system
             attr: nixosConfigurations.home-desktop.config.system.build.toplevel
             runner: ubuntu-24.04
-            publish: false
+            publish: true
           - name: Desktop home
             attr: legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage
             runner: ubuntu-24.04
-            publish: false
+            publish: true
           - name: MacBook system
             attr: darwinConfigurations.STOLTM7XVQCG7.system
             runner: macos-15
@@ -117,7 +117,7 @@ jobs:
             --max-jobs 2 --cores 2 \
             ".#${BUILD_ATTR}" > "$RUNNER_TEMP/build-result.json"
 
-      - name: Publish ThinkCentre closure
+      - name: Publish configuration closure
         if: github.event_name == 'workflow_dispatch' && inputs.publish_cache && matrix.publish
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}

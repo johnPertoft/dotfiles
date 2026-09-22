@@ -70,9 +70,13 @@ those caches available alongside Cachix rather than accidentally replacing them.
 The desktop uses the current CUDA cache at `https://cache.nixos-cuda.org`.
 
 All builds read public binary caches. Uploads remain explicitly opt-in through
-the `publish_cache` manual input and are still limited to the ThinkCentre row.
-The desktop and home closures include proprietary applications; review their
-redistribution terms and storage requirements before enabling public uploads for
-those rows. Pull requests never publish. See the
+the `publish_cache` manual input and cover the ThinkCentre system, desktop
+system, and desktop Home Manager closure. MacBook builds remain read-only.
+Publishing pushes each output's runtime closure, including dependencies downloaded
+from the CUDA and Numtide caches; Cachix skips paths already in the destination
+or the official NixOS cache, but not arbitrary third-party caches.
+The cache is public, and desktop closures contain proprietary applications;
+publishing requires permission to redistribute those packages and may exceed the
+free storage allowance. Pushes and pull requests never publish. See the
 [ThinkCentre cache setup](systems/thinkcentre/README.md#ci-builds-and-cachix)
 for the repository secret and manual publishing command.
