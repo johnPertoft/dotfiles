@@ -114,10 +114,12 @@ nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-hos
 
 ## CI builds and Cachix
 
-The `build-thinkcentre` job in `.github/workflows/check.yaml` builds this system
-on a GitHub-hosted Ubuntu runner, after the existing flake checks succeed.
-It runs on `main` and the initial `fix/ci-build` branch. It does not activate
-the configuration or require an online ThinkCentre.
+The **ThinkCentre system** matrix job in `.github/workflows/check.yaml` builds
+this system on a GitHub-hosted Ubuntu runner, after the existing flake checks
+succeed. The matrix also builds the desktop and MacBook systems and their
+standalone Home Manager configurations; see the [root README](../../README.md#ci-builds).
+It runs on `main`, the initial `fix/ci-build` branch, and pull requests to `main`.
+It does not activate the configuration or require an online ThinkCentre.
 
 Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
 also configure this cache and its public signing key for the hosts. Push-triggered
@@ -136,8 +138,9 @@ gh workflow run check.yaml --ref fix/ci-build -f publish_cache=true
 Publishing explicitly pushes the built system's runtime closure, rather than
 everything in the CI runner's store. Cachix skips paths already available from
 the official NixOS cache. No permanent pins are created by this initial workflow;
-normal Cachix garbage collection applies. The desktop and separate Home Manager
-configurations are not built or published by this job.
+normal Cachix garbage collection applies. Other matrix targets are built but
+are not published to the public cache until their redistribution terms and
+storage requirements have been reviewed.
 
 ## Outstanding TODOs / cutover work (all deferred)
 

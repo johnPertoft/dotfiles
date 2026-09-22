@@ -1,5 +1,16 @@
 on:
   push:
+    branches: [main, fix/ci-build]
+    paths-ignore:
+      - "**.md"
+      - LICENSE
+      - .gitignore
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - LICENSE
+      - .gitignore
   workflow_dispatch:
     inputs:
       publish_cache:
@@ -12,7 +23,10 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: check-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -26,16 +40,44 @@ jobs:
       - name: Check flake evaluation
         run: nix flake check --keep-going
 
-  build-thinkcentre:
+  build:
     needs: check
     if: >-
       github.repository == 'johnPertoft/dotfiles' &&
-      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/fix/ci-build')
-    runs-on: ubuntu-latest
+      (github.event_name == 'pull_request' ||
+       github.ref == 'refs/heads/main' || github.ref == 'refs/heads/fix/ci-build')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ThinkCentre system
+            attr: nixosConfigurations.thinkcentre.config.system.build.toplevel
+            runner: ubuntu-24.04
+            publish: true
+          - name: Desktop system
+            attr: nixosConfigurations.home-desktop.config.system.build.toplevel
+            runner: ubuntu-24.04
+            publish: false
+          - name: Desktop home
+            attr: legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage
+            runner: ubuntu-24.04
+            publish: false
+          - name: MacBook system
+            attr: darwinConfigurations.STOLTM7XVQCG7.system
+            runner: macos-15
+            publish: false
+          - name: MacBook home
+            attr: legacyPackages.aarch64-darwin.homeConfigurations."john.pertoft".activationPackage
+            runner: macos-15
+            publish: false
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
     concurrency:
-      group: thinkcentre-build-${{ github.ref }}
+      group: build-${{ matrix.attr }}-${{ github.ref }}
       cancel-in-progress: true
+    env:
+      BUILD_ATTR: ${{ matrix.attr }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -44,16 +86,20 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            extra-substituters = https://cache.numtide.com
+            extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
 
       - name: Configure Cachix
         uses: cachix/cachix-action@v17
         with:
           name: johnpertoft
-          extraPullNames: nix-community
+          extraPullNames: nix-community,devenv
           skipPush: true
 
       - name: Require cache write token
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_cache
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_cache && matrix.publish
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
         run: |
@@ -62,14 +108,14 @@ jobs:
             exit 1
           fi
 
-      - name: Build ThinkCentre system
+      - name: Build configuration
         run: |
-          nix build --out-link result-thinkcentre --print-build-logs \
+          nix build --out-link result --json --print-build-logs \
             --max-jobs 2 --cores 2 \
-            .#nixosConfigurations.thinkcentre.config.system.build.toplevel
+            ".#${BUILD_ATTR}" > "$RUNNER_TEMP/build-result.json"
 
       - name: Publish ThinkCentre closure
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_cache
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_cache && matrix.publish
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        run: cachix push johnpertoft "$(readlink -f result-thinkcentre)"
+        run: jq -r '.[].outputs[]' "$RUNNER_TEMP/build-result.json" | cachix push johnpertoft
