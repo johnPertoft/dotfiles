@@ -94,7 +94,7 @@ in
 
       # pi (earendil-works/pi): terminal coding agent with multi-model
       # support. Installed as a bare package — unlike claude-code/codex/
-      # antigravity-cli below, home-manager 26.05 ships no `programs.pi`
+      # antigravity-cli/opencode below, home-manager 26.05 ships no `programs.pi`
       # module, so it can't opt into the shared MCP servers via
       # enableMcpIntegration. Configure MCP for it manually if needed.
       agents.pi
@@ -155,9 +155,9 @@ in
         };
       };
 
-      # TODO: codex and antigravity-cli also expose a `skills` option with
-      # the same shape. Not sharing yet because skills often encode
-      # agent-specific assumptions (e.g. "use the Plan tool") that don't
+      # TODO: codex, antigravity-cli and opencode also expose a `skills`
+      # option with the same shape. Not sharing yet because skills often
+      # encode agent-specific assumptions (e.g. "use the Plan tool") that don't
       # translate across CLIs. Revisit once there are real skills to
       # classify — options for sharing later:
       #   - Manual opt-in: list specific skill paths per client.
@@ -180,6 +180,47 @@ in
       package = agents.antigravity-cli;
 
       enableMcpIntegration = true;
+    };
+
+    programs.opencode = {
+      enable = true;
+      package = agents.opencode;
+
+      enableMcpIntegration = true;
+
+      # The Nix-installed binary lives in the read-only store, so opencode's
+      # self-updater can only ever fail noisily. Package updates come from
+      # bumping the llm-agents input instead.
+      settings.autoupdate = false;
+
+      # No mutable-merge activation entry here, and none is needed — do not
+      # add one by analogy with claude-code and codex below. Those need it
+      # because they write runtime state back into the very file Nix owns.
+      # opencode keeps the two apart:
+      #   config  -> ~/.config/opencode/       (declarative, Nix-owned)
+      #   state   -> ~/.local/state/opencode/  (kv.json: theme + TUI prefs,
+      #                                         model.json, prompt history)
+      #   secrets -> ~/.local/share/opencode/  (auth.json, session db)
+      # so interactive changes never collide with the store symlink.
+      #
+      # For hand-edited *config*, opencode reads both opencode.json and
+      # opencode.jsonc from the config dir and deep-merges them, with .jsonc
+      # winning on conflicts. Nix owns the .json; drop an opencode.jsonc next
+      # to it as a personal override layer. Verified against 1.18.30 that the
+      # loader follows the /nix/store symlink and merges correctly.
+      #
+      # `tui` is deliberately unset. It generates tui.json, the declarative
+      # half of the TUI config (theme, keybinds, scroll_speed, diff_style,
+      # cursor, mouse, attention, plugin...). The theme resolves as
+      # `config.theme ?? kv.get("theme")`, so setting tui.theme here would
+      # silently freeze whatever the user picks in /themes. Note there is no
+      # tui.jsonc — the .jsonc escape hatch above does not apply to it.
+      #
+      # Never put `theme`, `keybinds` or `tui` in `settings` above. opencode
+      # migrates those keys out of opencode.json on startup: it writes a
+      # tui.json, rewrites the source file and leaves a .tui-migration.bak.
+      # That is the one code path that would try to write through the store
+      # symlink.
     };
 
     # Suppress the read-only symlinks that the upstream modules would generate
