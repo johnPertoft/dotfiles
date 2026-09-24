@@ -55,7 +55,8 @@ activation time or runtime are not included in these Nix closures.
 
 Pushes to `main` and the initial `fix/ci-build` branch, pull requests targeting
 `main`, and manual runs use this matrix. Documentation-only pushes/PRs are
-skipped. Each target has its own concurrency group, and a failed build does not
+skipped. Each target and trigger type has its own concurrency group: automatic
+runs cannot cancel manual upload experiments, and a failed build does not
 cancel its siblings. The Pi is not included; Linux and macOS jobs use native
 runners without emulation.
 
