@@ -271,8 +271,8 @@ def main():
     select_parser = commands.add_parser("select")
     select_parser.add_argument("--directory", type=Path, required=True)
     select_parser.add_argument("--cache", required=True)
-    select_parser.add_argument("--minimum-seconds", type=int, default=60)
-    select_parser.add_argument("--candidate-mib", type=int, default=250)
+    select_parser.add_argument("--minimum-seconds", type=int, default=300)
+    select_parser.add_argument("--candidate-mib", type=int, default=1024)
     select_parser.add_argument("--budget-mib", type=int, default=1024)
     args = parser.parse_args()
     if args.mode == "build":

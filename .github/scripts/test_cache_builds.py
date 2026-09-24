@@ -26,6 +26,15 @@ def event(name="package", seconds=90, **overrides):
     }
 
 
+class CommandLineTest(unittest.TestCase):
+    def test_default_policy(self):
+        argv = ["cache_builds.py", "select", "--directory", "report",
+                "--cache", "johnpertoft"]
+        with patch.object(cache.sys, "argv", argv), patch.object(cache, "select") as select:
+            self.assertEqual(cache.main(), 0)
+        select.assert_called_once_with(Path("report"), "johnpertoft", 300, 1024, 1024)
+
+
 class EventsTest(unittest.TestCase):
     def parse(self, events):
         return cache.executed_builds(events, NOW, NOW + timedelta(minutes=5))

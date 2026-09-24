@@ -82,8 +82,8 @@ telemetry changes.
 
 | Setting               | Default | Meaning                                            |
 | --------------------- | ------- | -------------------------------------------------- |
-| `CACHE_MIN_SECONDS`   | 60      | Minimum successful build duration                  |
-| `CACHE_CANDIDATE_MIB` | 250     | Maximum additional runtime closure per candidate   |
+| `CACHE_MIN_SECONDS`   | 300     | Minimum successful build duration                  |
+| `CACHE_CANDIDATE_MIB` | 1024    | Maximum additional runtime closure per candidate   |
 | `CACHE_BUDGET_MIB`    | 1024    | Maximum additional runtime closures per matrix job |
 
 The selector excludes the requested system/Home Manager roots, fixed-output
@@ -109,7 +109,7 @@ No eligible candidates is a valid result and uploads nothing.
 
 Manual runs can override the duration threshold with `minimum_build_seconds`
 (positive whole seconds) to tune or exercise the filter without changing the
-60-second policy for pushes/PRs. For example, add
+five-minute policy for pushes/PRs. For example, add
 `-f minimum_build_seconds=15` to the manual publishing command below; the closure
 size limits remain unchanged.
 

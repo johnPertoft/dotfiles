@@ -20,7 +20,7 @@ on:
       minimum_build_seconds:
         description: Minimum executed build time in positive whole seconds
         type: number
-        default: 60
+        default: 300
       build_targets:
         description: Configurations to build
         type: choice
@@ -135,8 +135,8 @@ jobs:
              (github.event_name == 'push' && github.ref == 'refs/heads/main')) }}
       CACHE_MIN_SECONDS: >-
         ${{ github.event_name == 'workflow_dispatch' &&
-            format('{0}', inputs.minimum_build_seconds) || '60' }}
-      CACHE_CANDIDATE_MIB: "250"
+            format('{0}', inputs.minimum_build_seconds) || '300' }}
+      CACHE_CANDIDATE_MIB: "1024"
       CACHE_BUDGET_MIB: "1024"
       # cachix use writes user-level cache lists; append these after loading them.
       NIX_CONFIG: |

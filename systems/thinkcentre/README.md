@@ -139,9 +139,9 @@ gh workflow run check.yaml --ref fix/ci-build -f publish_cache=true
 ```
 
 Publishing no longer pushes the complete system or Home Manager closure.
-The initial filter selects successful builds taking at least 60 seconds,
+The filter selects successful builds taking at least five minutes,
 excluding source fetches and configuration roots, and caps each candidate's
-additional runtime dependencies at 250 MiB NAR with a 1 GiB NAR budget per job.
+additional runtime dependencies at 1 GiB NAR with a 1 GiB NAR budget per job.
 See [selective binary caching](../../README.md#selective-binary-caching) for the
 policy, reports, and limitations. Dependencies from CUDA and Numtide count
 against these budgets unless already present in the destination or official
