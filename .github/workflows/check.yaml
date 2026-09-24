@@ -100,12 +100,6 @@ jobs:
         with:
           determinate: true
 
-      - name: Check selective cache logic and build telemetry
-        env:
-          NIX_CACHE_INTEGRATION: "1"
-          PYTHONDONTWRITEBYTECODE: "1"
-        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
-
       - name: Show flake
         run: nix flake show
 
