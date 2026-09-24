@@ -1,17 +1,216 @@
-on: push
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - LICENSE
+      - .gitignore
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - LICENSE
+      - .gitignore
+  workflow_dispatch:
+    inputs:
+      publish_cache:
+        description: Publish selected expensive Linux builds to Cachix
+        type: boolean
+        default: false
+      minimum_build_seconds:
+        description: Minimum executed build time in positive whole seconds
+        type: number
+        default: 300
+      build_targets:
+        description: Configurations to build
+        type: choice
+        default: all
+        options:
+          - all
+          - desktop
+
+permissions:
+  contents: read
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    concurrency:
+      group: check-${{ github.ref }}-${{ github.event_name }}
+      cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Choose build targets
+        id: matrix
+        env:
+          BUILD_TARGETS: ${{ inputs.build_targets || 'all' }}
+          BUILD_MATRIX: |
+            {"include": [
+              {
+                "name": "ThinkCentre system",
+                "group": "thinkcentre",
+                "attr": "nixosConfigurations.thinkcentre.config.system.build.toplevel",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              },
+              {
+                "name": "Desktop system",
+                "group": "desktop",
+                "attr": "nixosConfigurations.home-desktop.config.system.build.toplevel",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              },
+              {
+                "name": "Desktop home",
+                "group": "desktop",
+                "attr": "legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              },
+              {
+                "name": "MacBook system",
+                "group": "macbook",
+                "attr": "darwinConfigurations.STOLTM7XVQCG7.system",
+                "runner": "macos-15",
+                "publish": false
+              },
+              {
+                "name": "MacBook home",
+                "group": "macbook",
+                "attr": "legacyPackages.aarch64-darwin.homeConfigurations.\"john.pertoft\".activationPackage",
+                "runner": "macos-15",
+                "publish": false
+              }
+            ]}
+        run: |
+          matrix=$(jq -c --arg targets "$BUILD_TARGETS" '
+            if $targets == "all" then .
+            elif $targets == "desktop" then .include |= map(select(.group == "desktop"))
+            else error("Unknown build target group")
+            end
+          ' <<< "$BUILD_MATRIX")
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
+        with:
+          determinate: true
+
+      - name: Check selective cache logic and build telemetry
+        env:
+          NIX_CACHE_INTEGRATION: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
 
       - name: Show flake
         run: nix flake show
 
       - name: Check flake evaluation
         run: nix flake check --keep-going
+
+  build:
+    needs: check
+    if: >-
+      github.repository == 'johnPertoft/dotfiles' &&
+      (github.event_name == 'pull_request' ||
+       github.event_name == 'workflow_dispatch' ||
+       github.ref == 'refs/heads/main')
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.check.outputs.matrix) }}
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    concurrency:
+      group: build-${{ matrix.attr }}-${{ github.ref }}-${{ github.event_name }}
+      cancel-in-progress: true
+    env:
+      BUILD_ATTR: ${{ matrix.attr }}
+      PUBLISH_CACHE: >-
+        ${{ matrix.publish &&
+            ((github.event_name == 'workflow_dispatch' && inputs.publish_cache) ||
+             (github.event_name == 'push' && github.ref == 'refs/heads/main')) }}
+      CACHE_MIN_SECONDS: >-
+        ${{ github.event_name == 'workflow_dispatch' &&
+            format('{0}', inputs.minimum_build_seconds) || '300' }}
+      CACHE_CANDIDATE_MIB: "1024"
+      CACHE_BUDGET_MIB: "1024"
+      # cachix use writes user-level cache lists; append these after loading them.
+      NIX_CONFIG: |
+        extra-substituters = https://cache.numtide.com https://cache.nixos-cuda.org
+        extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g= cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M=
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          determinate: true
+
+      - name: Configure Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: johnpertoft
+          extraPullNames: nix-community,devenv
+          skipPush: true
+
+      - name: Show effective binary caches
+        run: nix config show substituters
+
+      - name: Require cache write token
+        if: env.PUBLISH_CACHE == 'true'
+        env:
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+        run: |
+          if [ -z "$CACHIX_AUTH_TOKEN" ]; then
+            echo "::error::Set the CACHIX_AUTH_TOKEN repository secret before publishing."
+            exit 1
+          fi
+
+      - name: Build configuration
+        run: |
+          if [ "${{ matrix.publish }}" = "true" ]; then
+            python3 .github/scripts/cache_builds.py build \
+              --directory "$RUNNER_TEMP/selective-cache" -- \
+              nix build --out-link result --json --print-build-logs \
+              --max-jobs 2 --cores 2 --builders "" ".#${BUILD_ATTR}"
+          else
+            nix build --out-link result --json --print-build-logs \
+              --max-jobs 2 --cores 2 ".#${BUILD_ATTR}" > "$RUNNER_TEMP/build-result.json"
+          fi
+
+      - name: Select expensive builds within the upload budget
+        if: matrix.publish
+        run: |
+          python3 .github/scripts/cache_builds.py select \
+            --directory "$RUNNER_TEMP/selective-cache" --cache johnpertoft \
+            --minimum-seconds "$CACHE_MIN_SECONDS" \
+            --candidate-mib "$CACHE_CANDIDATE_MIB" --budget-mib "$CACHE_BUDGET_MIB"
+
+      - name: Publish selected package closures
+        if: env.PUBLISH_CACHE == 'true'
+        env:
+          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+        run: |
+          paths="$RUNNER_TEMP/selective-cache/selected-paths.txt"
+          if [ -s "$paths" ]; then
+            cachix push johnpertoft < "$paths"
+          else
+            echo "No builds meet the duration and closure-size policy; nothing to upload."
+          fi
+
+      - name: Save cache selection report
+        if: always() && matrix.publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: cache-report-${{ matrix.name }}
+          path: ${{ runner.temp }}/selective-cache/
+          if-no-files-found: ignore
+          retention-days: 7

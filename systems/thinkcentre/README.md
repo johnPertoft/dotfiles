@@ -112,6 +112,42 @@ sudo nixos-rebuild switch --flake github:johnPertoft/dotfiles#thinkcentre
 nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-host thinkcentre --use-remote-sudo
 ```
 
+## CI builds and Cachix
+
+The **ThinkCentre system** matrix job in `.github/workflows/check.yaml` builds
+this system on a GitHub-hosted Ubuntu runner, after the existing flake checks
+succeed. The matrix also builds the desktop and MacBook systems and their
+standalone Home Manager configurations; see the [root README](../../README.md#ci-builds).
+It runs on `main`, pull requests to `main`, and manual dispatches.
+It does not activate the configuration or require an online ThinkCentre.
+
+Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
+also configure this cache and its public signing key for the hosts. Successful
+`main` builds publish selected expensive Linux packages. Pull requests and
+branch pushes are read-only.
+
+To publish selected packages from Linux system and desktop Home Manager builds, create a
+Cachix write token scoped to `johnpertoft` and store it as the **repository Actions secret**
+`CACHIX_AUTH_TOKEN` (not an environment secret or a file in this repository).
+Then manually run the workflow with `publish_cache` enabled:
+
+```sh
+gh workflow run check.yaml --ref main -f publish_cache=true
+# To build only desktop system/home, also pass -f build_targets=desktop.
+```
+
+Publishing does not push the complete system or Home Manager closure.
+The filter selects successful builds taking at least five minutes,
+excluding source fetches and configuration roots, and caps each candidate's
+additional runtime dependencies at 1 GiB NAR with a 1 GiB NAR budget per job.
+See [selective binary caching](../../README.md#selective-binary-caching) for the
+policy, reports, and limitations. Dependencies from CUDA and Numtide count
+against these budgets unless already present in the destination or official
+NixOS cache. These uncompressed budgets are not the Cachix storage quota.
+No pins are created; normal Cachix garbage collection applies. Public uploads
+require redistribution permission for the selected packages and dependencies.
+The MacBook matrix targets are built but are not published.
+
 ## Outstanding TODOs / cutover work (all deferred)
 
 - **Swap the SSH key** — currently the _work_ key (`john.pertoft@king.com`).
