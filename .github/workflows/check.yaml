@@ -17,6 +17,10 @@ on:
         description: Publish selected expensive Linux builds to Cachix
         type: boolean
         default: false
+      minimum_build_seconds:
+        description: Minimum executed build time in positive whole seconds
+        type: number
+        default: 60
 
 permissions:
   contents: read
@@ -90,7 +94,9 @@ jobs:
         ${{ matrix.publish &&
             ((github.event_name == 'workflow_dispatch' && inputs.publish_cache) ||
              (github.event_name == 'push' && github.ref == 'refs/heads/main')) }}
-      CACHE_MIN_SECONDS: "60"
+      CACHE_MIN_SECONDS: >-
+        ${{ github.event_name == 'workflow_dispatch' &&
+            format('{0}', inputs.minimum_build_seconds) || '60' }}
       CACHE_CANDIDATE_MIB: "250"
       CACHE_BUDGET_MIB: "1024"
       # cachix use writes user-level cache lists; append these after loading them.

@@ -106,6 +106,12 @@ build reports selected/skipped candidates in its job summary, with detailed
 JSON and the selected output paths retained as a seven-day Actions artifact.
 No eligible candidates is a valid result and uploads nothing.
 
+Manual runs can override the duration threshold with `minimum_build_seconds`
+(positive whole seconds) to tune or exercise the filter without changing the
+60-second policy for pushes/PRs. For example, add
+`-f minimum_build_seconds=15` to the manual publishing command below; the closure
+size limits remain unchanged.
+
 Hosts with the configured Cachix URL/key substitute matching package outputs
 normally; small uncached configuration derivations still build locally. Use an
 exact commit whose relevant CI build and publication succeeded. Matching inputs
