@@ -28,6 +28,7 @@ on:
         options:
           - all
           - desktop
+          - cache-probe
 
 permissions:
   contents: read
@@ -48,6 +49,7 @@ jobs:
         id: matrix
         env:
           BUILD_TARGETS: ${{ inputs.build_targets || 'all' }}
+          PUBLISH_REQUESTED: ${{ inputs.publish_cache }}
           BUILD_MATRIX: |
             {"include": [
               {
@@ -87,9 +89,21 @@ jobs:
               }
             ]}
         run: |
+          if [ "$BUILD_TARGETS" = "cache-probe" ] && [ "$PUBLISH_REQUESTED" != "true" ]; then
+            echo "::error::The cache probe requires publish_cache=true."
+            exit 1
+          fi
           matrix=$(jq -c --arg targets "$BUILD_TARGETS" '
             if $targets == "all" then .
             elif $targets == "desktop" then .include |= map(select(.group == "desktop"))
+            elif $targets == "cache-probe" then
+              {"include": [{
+                "name": "Cache smoke probe",
+                "group": "cache-probe",
+                "attr": "cache-probe",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              }]}
             else error("Unknown build target group")
             end
           ' <<< "$BUILD_MATRIX")
@@ -114,6 +128,9 @@ jobs:
 
   build:
     needs: check
+    outputs:
+      cache_probe_path: ${{ steps.probe.outputs.path }}
+      cache_probe_id: ${{ steps.probe.outputs.id }}
     if: >-
       github.repository == 'johnPertoft/dotfiles' &&
       (github.event_name == 'pull_request' ||
@@ -129,6 +146,7 @@ jobs:
       cancel-in-progress: true
     env:
       BUILD_ATTR: ${{ matrix.attr }}
+      BUILD_GROUP: ${{ matrix.group }}
       PUBLISH_CACHE: >-
         ${{ matrix.publish &&
             ((github.event_name == 'workflow_dispatch' && inputs.publish_cache) ||
@@ -175,7 +193,15 @@ jobs:
 
       - name: Build configuration
         run: |
-          if [ "${{ matrix.publish }}" = "true" ]; then
+          if [ "$BUILD_GROUP" = "cache-probe" ]; then
+            python3 .github/scripts/cache_builds.py build \
+              --directory "$RUNNER_TEMP/selective-cache" -- \
+              nix build --out-link result --json --print-build-logs \
+              --max-jobs 2 --cores 2 --builders "" --impure \
+              --file .github/cache-probe.nix \
+              --argstr probeId "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+              --argstr minimumBuildSeconds "$CACHE_MIN_SECONDS"
+          elif [ "${{ matrix.publish }}" = "true" ]; then
             python3 .github/scripts/cache_builds.py build \
               --directory "$RUNNER_TEMP/selective-cache" -- \
               nix build --out-link result --json --print-build-logs \
@@ -192,6 +218,16 @@ jobs:
             --directory "$RUNNER_TEMP/selective-cache" --cache johnpertoft \
             --minimum-seconds "$CACHE_MIN_SECONDS" \
             --candidate-mib "$CACHE_CANDIDATE_MIB" --budget-mib "$CACHE_BUDGET_MIB"
+
+      - name: Require the slow probe to be selected
+        if: matrix.group == 'cache-probe'
+        id: probe
+        run: |
+          probe=$(cat result)
+          jq -e --arg path "$probe" '.selected_outputs == [$path]' \
+            "$RUNNER_TEMP/selective-cache/selection.json"
+          echo "path=$probe" >> "$GITHUB_OUTPUT"
+          echo "id=$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
 
       - name: Publish selected package closures
         if: env.PUBLISH_CACHE == 'true'
@@ -213,3 +249,40 @@ jobs:
           path: ${{ runner.temp }}/selective-cache/
           if-no-files-found: ignore
           retention-days: 7
+
+  cache-probe-pull:
+    name: Retrieve probe without building
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.build_targets == 'cache-probe'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PROBE_PATH: ${{ needs.build.outputs.cache_probe_path }}
+      PROBE_ID: ${{ needs.build.outputs.cache_probe_id }}
+    steps:
+      - name: Install Nix on a fresh runner
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          determinate: true
+
+      - name: Retrieve the probe exclusively from Cachix
+        run: |
+          if [ -z "$PROBE_PATH" ] || [ -z "$PROBE_ID" ]; then
+            echo "::error::The build job did not report the published probe."
+            exit 1
+          fi
+          if [ -e "$PROBE_PATH" ]; then
+            echo "::error::The probe is already present; this is not a fresh-store test."
+            exit 1
+          fi
+          nix-store --realise "$PROBE_PATH" \
+            --option max-jobs 0 --option builders "" \
+            --option substituters https://johnpertoft.cachix.org \
+            --option trusted-public-keys johnpertoft.cachix.org-1:/P3D1kQVPzjJ5K7pza23Fh/cvZf89IdkRaPKx1ZYjfY= \
+            --option require-sigs true --option fallback false
+          if [ "$(cat "$PROBE_PATH")" != "cache-probe-$PROBE_ID" ]; then
+            echo "::error::The retrieved probe does not contain the expected marker."
+            exit 1
+          fi
+          printf '### Cachix probe retrieved successfully\n\nFetched output:\n\n    %s\n\nLocal and remote builds were disabled, with only johnpertoft.cachix.org configured.\n' \
+            "$PROBE_PATH" >> "$GITHUB_STEP_SUMMARY"

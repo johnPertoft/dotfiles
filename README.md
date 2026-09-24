@@ -125,3 +125,32 @@ No pins are created. The cache is public, so selected packages and dependencies
 must be suitable for public redistribution. See the
 [ThinkCentre cache setup](systems/thinkcentre/README.md#ci-builds-and-cachix)
 for the repository secret and manual publishing command.
+
+#### End-to-end cache probe
+
+An opt-in synthetic probe exercises publication and retrieval without compiling
+a large application:
+
+```sh
+gh workflow run check.yaml --ref fix/ci-build \
+  -f build_targets=cache-probe -f publish_cache=true
+# After merging, use --ref main instead.
+```
+
+`.github/cache-probe.nix` sleeps ten seconds longer than the selected duration
+threshold (310 seconds by default) and writes a tiny marker file. Its name
+includes the workflow run ID and attempt, so a new attempt executes the builder
+rather than reusing an older probe. The threshold must be between 1 and 900
+seconds for this probe.
+
+A cheap wrapper references the slow output, allowing the ordinary selector to
+exclude the requested root while selecting the slow dependency. CI requires
+that exact output to be selected and publishes it through the normal upload
+step. A separate fresh-runner job then retrieves the reported store path with
+local and remote builds disabled, only this Cachix cache configured, and signature
+checking enabled. It also compares the downloaded marker with the producer's
+run ID/attempt.
+
+This tests the caching pipeline, not compiler performance. It is not included in
+the normal host matrix and does not change installed configurations. The tiny
+probe is not pinned and is subject to normal Cachix garbage collection.
