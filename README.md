@@ -60,23 +60,57 @@ cancel its siblings. The Pi is not included; Linux and macOS jobs use native
 runners without emulation.
 
 CI keeps the existing Nix installer and Cachix actions. There are no custom
-actions or detection scripts. Each selected target is requested on every run,
-and Nix substitutes cached outputs where available. This deliberately avoids
-separate change-detection logic.
+actions or change-detection scripts. Each target is requested on every run,
+and Nix substitutes cached outputs where available.
 
 CI appends the Numtide agent and CUDA caches through `NIX_CONFIG`, which is read
 after the user-level configuration written by the Cachix action. This keeps
 those caches available alongside Cachix rather than accidentally replacing them.
 The desktop uses the current CUDA cache at `https://cache.nixos-cuda.org`.
 
-All builds read public binary caches. Uploads remain explicitly opt-in through
-the `publish_cache` manual input and cover the ThinkCentre system, desktop
-system, and desktop Home Manager closure. MacBook builds remain read-only.
-Publishing pushes each output's runtime closure, including dependencies downloaded
-from the CUDA and Numtide caches; Cachix skips paths already in the destination
-or the official NixOS cache, but not arbitrary third-party caches.
-The cache is public, and desktop closures contain proprietary applications;
-publishing requires permission to redistribute those packages and may exceed the
-free storage allowance. Pushes and pull requests never publish. See the
+### Selective binary caching
+
+The Linux jobs record successful, actually executed derivations using
+Determinate Nix's local build-events API. Downloaded/substituted paths are not
+candidates. CI uses the recorded execution duration, not the time spent waiting
+for a build slot, downloading dependencies, or evaluating the flake. The check
+job exercises real builds, a cached repeat, and a failure to detect incompatible
+telemetry changes.
+
+`.github/scripts/cache_builds.py` selects candidates using these workflow settings:
+
+| Setting               | Default | Meaning                                            |
+| --------------------- | ------- | -------------------------------------------------- |
+| `CACHE_MIN_SECONDS`   | 60      | Minimum successful build duration                  |
+| `CACHE_CANDIDATE_MIB` | 250     | Maximum additional runtime closure per candidate   |
+| `CACHE_BUDGET_MIB`    | 1024    | Maximum additional runtime closures per matrix job |
+
+The selector excludes the requested system/Home Manager roots, fixed-output
+derivations (including source fetches), and source-like derivation names. It
+considers the slowest builds first. Size budgets use **uncompressed NAR bytes**,
+not compressed Cachix storage usage, and count shared dependencies once per job.
+These are conservative per-run estimates, not an account-wide storage quota or
+a retention policy.
+
+Cachix recursively uploads each selected output's runtime dependencies. The
+selector uses Cachix's missing-path API to budget everything that would be
+added, excluding paths already in the destination or the official NixOS cache.
+Dependencies in CUDA, Numtide, or other third-party caches still count against
+the budget. A locally compiled package with a large uncached CUDA closure can
+therefore be skipped rather than filling the cache.
+
+Successful pushes to **`main` publish selected Linux outputs automatically**.
+Manual runs publish only with `publish_cache=true`; branch pushes and pull
+requests remain read-only. MacBook jobs remain read-only. Every successful Linux
+build reports selected/skipped candidates in its job summary, with detailed
+JSON and the selected output paths retained as a seven-day Actions artifact.
+No eligible candidates is a valid result and uploads nothing.
+
+Hosts with the configured Cachix URL/key substitute matching package outputs
+normally; small uncached configuration derivations still build locally. Use an
+exact commit whose relevant CI build and publication succeeded. Matching inputs
+and architecture are required, and garbage collection can still remove entries.
+No pins are created. The cache is public, so selected packages and dependencies
+must be suitable for public redistribution. See the
 [ThinkCentre cache setup](systems/thinkcentre/README.md#ci-builds-and-cachix)
 for the repository secret and manual publishing command.

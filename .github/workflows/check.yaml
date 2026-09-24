@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_cache:
-        description: Publish the ThinkCentre and desktop system/home closures to Cachix
+        description: Publish selected expensive Linux builds to Cachix
         type: boolean
         default: false
 
@@ -33,6 +33,14 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
+        with:
+          determinate: true
+
+      - name: Check selective cache logic and build telemetry
+        env:
+          NIX_CACHE_INTEGRATION: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
 
       - name: Show flake
         run: nix flake show
@@ -78,6 +86,13 @@ jobs:
       cancel-in-progress: true
     env:
       BUILD_ATTR: ${{ matrix.attr }}
+      PUBLISH_CACHE: >-
+        ${{ matrix.publish &&
+            ((github.event_name == 'workflow_dispatch' && inputs.publish_cache) ||
+             (github.event_name == 'push' && github.ref == 'refs/heads/main')) }}
+      CACHE_MIN_SECONDS: "60"
+      CACHE_CANDIDATE_MIB: "250"
+      CACHE_BUDGET_MIB: "1024"
       # cachix use writes user-level cache lists; append these after loading them.
       NIX_CONFIG: |
         extra-substituters = https://cache.numtide.com https://cache.nixos-cuda.org
@@ -90,6 +105,8 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
+        with:
+          determinate: true
 
       - name: Configure Cachix
         uses: cachix/cachix-action@v17
@@ -102,7 +119,7 @@ jobs:
         run: nix config show substituters
 
       - name: Require cache write token
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_cache && matrix.publish
+        if: env.PUBLISH_CACHE == 'true'
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
         run: |
@@ -113,12 +130,41 @@ jobs:
 
       - name: Build configuration
         run: |
-          nix build --out-link result --json --print-build-logs \
-            --max-jobs 2 --cores 2 \
-            ".#${BUILD_ATTR}" > "$RUNNER_TEMP/build-result.json"
+          if [ "${{ matrix.publish }}" = "true" ]; then
+            python3 .github/scripts/cache_builds.py build \
+              --directory "$RUNNER_TEMP/selective-cache" -- \
+              nix build --out-link result --json --print-build-logs \
+              --max-jobs 2 --cores 2 --builders "" ".#${BUILD_ATTR}"
+          else
+            nix build --out-link result --json --print-build-logs \
+              --max-jobs 2 --cores 2 ".#${BUILD_ATTR}" > "$RUNNER_TEMP/build-result.json"
+          fi
 
-      - name: Publish configuration closure
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_cache && matrix.publish
+      - name: Select expensive builds within the upload budget
+        if: matrix.publish
+        run: |
+          python3 .github/scripts/cache_builds.py select \
+            --directory "$RUNNER_TEMP/selective-cache" --cache johnpertoft \
+            --minimum-seconds "$CACHE_MIN_SECONDS" \
+            --candidate-mib "$CACHE_CANDIDATE_MIB" --budget-mib "$CACHE_BUDGET_MIB"
+
+      - name: Publish selected package closures
+        if: env.PUBLISH_CACHE == 'true'
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
-        run: jq -r '.[].outputs[]' "$RUNNER_TEMP/build-result.json" | cachix push johnpertoft
+        run: |
+          paths="$RUNNER_TEMP/selective-cache/selected-paths.txt"
+          if [ -s "$paths" ]; then
+            cachix push johnpertoft < "$paths"
+          else
+            echo "No builds meet the duration and closure-size policy; nothing to upload."
+          fi
+
+      - name: Save cache selection report
+        if: always() && matrix.publish
+        uses: actions/upload-artifact@v4
+        with:
+          name: cache-report-${{ matrix.name }}
+          path: ${{ runner.temp }}/selective-cache/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -122,10 +122,11 @@ It runs on `main`, the initial `fix/ci-build` branch, and pull requests to `main
 It does not activate the configuration or require an online ThinkCentre.
 
 Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
-also configure this cache and its public signing key for the hosts. Push-triggered
-builds are read-only and **do not upload** any store paths.
+also configure this cache and its public signing key for the hosts. Successful
+`main` builds publish selected expensive Linux packages. Pull requests and
+branch pushes are read-only.
 
-To publish successful Linux system and desktop Home Manager closures, create a
+To publish selected packages from Linux system and desktop Home Manager builds, create a
 Cachix write token scoped to `johnpertoft` and store it as the **repository Actions secret**
 `CACHIX_AUTH_TOKEN` (not an environment secret or a file in this repository).
 Then manually run the workflow with `publish_cache` enabled:
@@ -135,13 +136,16 @@ gh workflow run check.yaml --ref fix/ci-build -f publish_cache=true
 # After merging, use --ref main instead.
 ```
 
-Publishing explicitly pushes the runtime closures of the ThinkCentre system,
-desktop system, and desktop Home Manager output, rather than everything in the
-CI runner's store. Cachix skips paths already in the destination or the official
-NixOS cache, but may duplicate dependencies from other caches, including CUDA
-and Numtide. No permanent pins are created; normal Cachix garbage collection
-applies. Desktop closures contain proprietary applications, so public uploads
-require redistribution permission and may exceed the free storage allowance.
+Publishing no longer pushes the complete system or Home Manager closure.
+The initial filter selects successful builds taking at least 60 seconds,
+excluding source fetches and configuration roots, and caps each candidate's
+additional runtime dependencies at 250 MiB NAR with a 1 GiB NAR budget per job.
+See [selective binary caching](../../README.md#selective-binary-caching) for the
+policy, reports, and limitations. Dependencies from CUDA and Numtide count
+against these budgets unless already present in the destination or official
+NixOS cache. These uncompressed budgets are not the Cachix storage quota.
+No pins are created; normal Cachix garbage collection applies. Public uploads
+require redistribution permission for the selected packages and dependencies.
 The MacBook matrix targets are built but are not published.
 
 ## Outstanding TODOs / cutover work (all deferred)
