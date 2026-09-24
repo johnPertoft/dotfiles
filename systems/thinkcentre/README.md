@@ -135,6 +135,7 @@ Then manually run the workflow with `publish_cache` enabled:
 gh workflow run check.yaml --ref fix/ci-build -f publish_cache=true
 # After merging, use --ref main instead.
 # For a lower-threshold experiment, also pass -f minimum_build_seconds=15.
+# To build only desktop system/home, also pass -f build_targets=desktop.
 ```
 
 Publishing no longer pushes the complete system or Home Manager closure.

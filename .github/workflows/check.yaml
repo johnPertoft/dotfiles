@@ -21,6 +21,13 @@ on:
         description: Minimum executed build time in positive whole seconds
         type: number
         default: 60
+      build_targets:
+        description: Configurations to build
+        type: choice
+        default: all
+        options:
+          - all
+          - desktop
 
 permissions:
   contents: read
@@ -28,12 +35,65 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
     concurrency:
       group: check-${{ github.ref }}-${{ github.event_name }}
       cancel-in-progress: true
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Choose build targets
+        id: matrix
+        env:
+          BUILD_TARGETS: ${{ inputs.build_targets || 'all' }}
+          BUILD_MATRIX: |
+            {"include": [
+              {
+                "name": "ThinkCentre system",
+                "group": "thinkcentre",
+                "attr": "nixosConfigurations.thinkcentre.config.system.build.toplevel",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              },
+              {
+                "name": "Desktop system",
+                "group": "desktop",
+                "attr": "nixosConfigurations.home-desktop.config.system.build.toplevel",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              },
+              {
+                "name": "Desktop home",
+                "group": "desktop",
+                "attr": "legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage",
+                "runner": "ubuntu-24.04",
+                "publish": true
+              },
+              {
+                "name": "MacBook system",
+                "group": "macbook",
+                "attr": "darwinConfigurations.STOLTM7XVQCG7.system",
+                "runner": "macos-15",
+                "publish": false
+              },
+              {
+                "name": "MacBook home",
+                "group": "macbook",
+                "attr": "legacyPackages.aarch64-darwin.homeConfigurations.\"john.pertoft\".activationPackage",
+                "runner": "macos-15",
+                "publish": false
+              }
+            ]}
+        run: |
+          matrix=$(jq -c --arg targets "$BUILD_TARGETS" '
+            if $targets == "all" then .
+            elif $targets == "desktop" then .include |= map(select(.group == "desktop"))
+            else error("Unknown build target group")
+            end
+          ' <<< "$BUILD_MATRIX")
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
@@ -60,28 +120,7 @@ jobs:
        github.ref == 'refs/heads/main' || github.ref == 'refs/heads/fix/ci-build')
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - name: ThinkCentre system
-            attr: nixosConfigurations.thinkcentre.config.system.build.toplevel
-            runner: ubuntu-24.04
-            publish: true
-          - name: Desktop system
-            attr: nixosConfigurations.home-desktop.config.system.build.toplevel
-            runner: ubuntu-24.04
-            publish: true
-          - name: Desktop home
-            attr: legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage
-            runner: ubuntu-24.04
-            publish: true
-          - name: MacBook system
-            attr: darwinConfigurations.STOLTM7XVQCG7.system
-            runner: macos-15
-            publish: false
-          - name: MacBook home
-            attr: legacyPackages.aarch64-darwin.homeConfigurations."john.pertoft".activationPackage
-            runner: macos-15
-            publish: false
+      matrix: ${{ fromJSON(needs.check.outputs.matrix) }}
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 120

@@ -113,6 +113,10 @@ Manual runs can override the duration threshold with `minimum_build_seconds`
 `-f minimum_build_seconds=15` to the manual publishing command below; the closure
 size limits remain unchanged.
 
+Set `build_targets=desktop` on a manual run to build only the desktop system and
+desktop Home Manager configuration. The default `all` and all push/PR runs retain
+the full matrix. This is an explicit target selector, not change detection.
+
 Hosts with the configured Cachix URL/key substitute matching package outputs
 normally; small uncached configuration derivations still build locally. Use an
 exact commit whose relevant CI build and publication succeeded. Matching inputs
