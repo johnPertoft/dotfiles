@@ -116,7 +116,7 @@ nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-hos
 
 The **ThinkCentre system** matrix job in `.github/workflows/ci.yaml` builds
 this system on a GitHub-hosted Ubuntu runner, after the existing flake checks
-succeed. The matrix also builds the desktop and MacBook systems and their
+succeed. The matrix also builds the Pi system, desktop and MacBook systems and their
 standalone Home Manager configurations; see the [root README](../../README.md#ci-builds).
 It runs on main pushes and manual dispatches, including those triggered by the
 weekly lockfile updater. Pull requests run flake checks without full builds.
@@ -135,7 +135,6 @@ Then manually run the workflow with `publish_cache` enabled:
 
 ```sh
 gh workflow run ci.yaml --ref main -f publish_cache=true
-# To build only desktop system/home, also pass -f build_targets=desktop.
 ```
 
 Publishing does not push the complete system or Home Manager closure.

@@ -42,6 +42,7 @@ The `CI` workflow in `.github/workflows/ci.yaml` uses a fixed, inline matrix:
 | Target             | Flake output                                                                        | Runner        |
 | ------------------ | ----------------------------------------------------------------------------------- | ------------- |
 | ThinkCentre system | `nixosConfigurations.thinkcentre.config.system.build.toplevel`                      | Ubuntu x86-64 |
+| Pi system          | `nixosConfigurations.pi.config.system.build.toplevel`                               | Ubuntu ARM64  |
 | Desktop system     | `nixosConfigurations.home-desktop.config.system.build.toplevel`                     | Ubuntu x86-64 |
 | Desktop home       | `legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage`             | Ubuntu x86-64 |
 | MacBook system     | `darwinConfigurations.STOLTM7XVQCG7.system`                                         | macOS ARM64   |
@@ -59,8 +60,12 @@ checks succeed; pull requests run checks without full configuration builds.
 Documentation-only pushes/PRs are skipped.
 Each target and trigger type has its own concurrency group: automatic
 runs cannot cancel manual upload experiments, and a failed build does not
-cancel its siblings. The Pi is not included; Linux and macOS jobs use native
+cancel its siblings. Linux and macOS jobs use native
 runners without emulation.
+
+The Pi job builds its NixOS system closure, not an SD image, and does not deploy
+or boot it. There is no Pi-specific Home Manager configuration in this matrix.
+It uses the same selective publication policy as the other Linux targets.
 
 CI uses the Nix installer and Cachix actions. There are no custom
 actions or change-detection scripts. Each target is requested on every build run,
@@ -118,9 +123,7 @@ Manual runs can override the duration threshold with `minimum_build_seconds`
 (positive whole seconds) to tune or exercise the filter without changing the
 five-minute policy for main pushes. The closure size limits remain unchanged.
 
-Set `build_targets=desktop` on a manual run to build only the desktop system and
-desktop Home Manager configuration. The default `all` and all main pushes retain
-the full matrix. This is an explicit target selector, not change detection.
+Every build run includes all six targets, including manual runs.
 
 Hosts with the configured Cachix URL/key substitute matching package outputs
 normally; small uncached configuration derivations still build locally. Use an
