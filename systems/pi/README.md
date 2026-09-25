@@ -133,6 +133,24 @@ nixos-rebuild build-vm --flake .#pi
 ./result/bin/run-pi-vm       # boots the config in QEMU
 ```
 
+## CI builds and Cachix
+
+The **Pi system** job in `.github/workflows/ci.yaml` builds
+`nixosConfigurations.pi.config.system.build.toplevel` on a native
+`ubuntu-24.04-arm` runner after the flake checks succeed. It runs alongside
+the other configurations on main pushes and manual CI dispatches, including
+the weekly updater's dispatch. Pull requests run checks without full builds.
+This builds the system closure, not an SD image, and does not deploy to or
+boot the physical Pi.
+
+Like the other Linux targets, the Pi job can publish selected expensive builds
+to Cachix using the five-minute minimum and 1 GiB additional NAR limits per
+candidate and per job. Publication is automatic for main pushes and weekly
+updates; other manual CI runs require `publish_cache=true`.
+The shared Nix settings let the Pi consume matching ARM64 outputs from the
+cache. See [selective binary caching](../../README.md#selective-binary-caching)
+for the full policy.
+
 ## Recovery
 
 If a bad config locks you out: pull the card, mount `NIXOS_SD` elsewhere, and
