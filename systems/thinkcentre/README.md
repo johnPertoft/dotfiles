@@ -114,17 +114,19 @@ nixos-rebuild switch --flake .#thinkcentre --target-host thinkcentre --build-hos
 
 ## CI builds and Cachix
 
-The **ThinkCentre system** matrix job in `.github/workflows/check.yaml` builds
+The **ThinkCentre system** matrix job in `.github/workflows/ci.yaml` builds
 this system on a GitHub-hosted Ubuntu runner, after the existing flake checks
 succeed. The matrix also builds the desktop and MacBook systems and their
 standalone Home Manager configurations; see the [root README](../../README.md#ci-builds).
-It runs on `main`, pull requests to `main`, and manual dispatches.
+It runs on main pushes and manual dispatches, including those triggered by the
+weekly lockfile updater. Pull requests run flake checks without full builds.
 It does not activate the configuration or require an online ThinkCentre.
 
 Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
 also configure this cache and its public signing key for the hosts. Successful
-`main` builds publish selected expensive Linux packages. Pull requests and
-branch pushes are read-only.
+CI builds from main pushes and weekly updates publish selected expensive Linux
+packages. Other manual runs publish only when explicitly enabled; pull requests
+do not publish.
 
 To publish selected packages from Linux system and desktop Home Manager builds, create a
 Cachix write token scoped to `johnpertoft` and store it as the **repository Actions secret**
@@ -132,7 +134,7 @@ Cachix write token scoped to `johnpertoft` and store it as the **repository Acti
 Then manually run the workflow with `publish_cache` enabled:
 
 ```sh
-gh workflow run check.yaml --ref main -f publish_cache=true
+gh workflow run ci.yaml --ref main -f publish_cache=true
 # To build only desktop system/home, also pass -f build_targets=desktop.
 ```
 

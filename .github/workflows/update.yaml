@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: "write"
+  actions: "write"
 
 jobs:
   update:
@@ -32,3 +33,11 @@ jobs:
 
       - name: Push update
         run: git push
+
+      - name: Trigger CI for the updated ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLISH_CACHE: ${{ github.ref == 'refs/heads/main' }}
+        run: |
+          gh workflow run ci.yaml --repo "$GITHUB_REPOSITORY" \
+            --ref "$GITHUB_REF_NAME" -f publish_cache="$PUBLISH_CACHE"
