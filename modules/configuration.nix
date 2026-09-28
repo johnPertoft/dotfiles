@@ -7,6 +7,7 @@
       "flakes"
     ];
     substituters = [
+      "https://johnpertoft.cachix.org"
       "https://nix-community.cachix.org"
       # llm-agents.nix's prebuilt binaries (codex, claude-code, gemini-cli, …).
       # Replaces the old numtide.cachix.org cache, which it migrated away from.
@@ -14,6 +15,7 @@
       "https://devenv.cachix.org"
     ];
     trusted-public-keys = [
+      "johnpertoft.cachix.org-1:/P3D1kQVPzjJ5K7pza23Fh/cvZf89IdkRaPKx1ZYjfY="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
       "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
