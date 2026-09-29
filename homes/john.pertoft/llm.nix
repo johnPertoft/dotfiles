@@ -50,4 +50,24 @@ in
       };
     };
   };
+
+  # Work-specific Copilot CLI settings, merged into settings.json the same
+  # way as the Claude Code block above. `extraKnownMarketplaces` uses the
+  # same shape here because Copilot CLI (per its docs) reads this key from
+  # the shared cross-tool subset it has in common with Claude Code's own
+  # settings.json.
+  #
+  # enabledPlugins is deliberately NOT set here — see the "exclude" decision
+  # in modules/home-manager/llm: forcing a plugin on via Nix would fight the
+  # CLI's own /plugin install|uninstall bookkeeping in settings.json. Run
+  # `/plugin marketplace add ai-engineering-marketplace` then
+  # `/plugin install monday-mcp` interactively instead.
+  programs.github-copilot-cli.extraSettings.extraKnownMarketplaces = {
+    ai-engineering-marketplace = {
+      source = {
+        source = "git";
+        url = "git@github.int.midasplayer.com:ai-ml/ai-engineering-marketplace.git";
+      };
+    };
+  };
 }

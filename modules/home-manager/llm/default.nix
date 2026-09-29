@@ -74,6 +74,86 @@ let
     (pkgs.formats.json { }).generate "claude-settings.json"
       (lib.recursiveUpdate config.programs.claude-code.settings
         config.programs.claude-code.extraSettings);
+
+  # GitHub Copilot CLI: merge shared settings + host-specific extraSettings
+  # into one JSON, targeting settings.json (NOT
+  # programs.github-copilot-cli.settings, which the upstream module still
+  # writes to config.json — see the comment at its `enable` block below for
+  # why that's the wrong file as of the current CLI).
+  copilotSharedSettings = {
+    model = "gpt-6-astra";
+    effortLevel = "medium";
+    contextTier = "long_context";
+    mouse = true;
+    beep = true;
+    stream = true;
+    # The CLI binary itself comes from Nix (llm-agents.copilot-cli), so let
+    # self-updates fight the read-only store the way opencode's
+    # `settings.autoupdate = false` above does. autoUpdate also covers
+    # "update first-party plugins at session start" per the docs, which
+    # would similarly drift from whatever we declare below.
+    autoUpdate = false;
+    includeCoAuthoredBy = true;
+    updateTerminalTitle = true;
+    terminalProgress = true;
+    logLevel = "default";
+    renderMarkdown = true;
+    footer = {
+      showModelEffort = true;
+      showDirectory = true;
+      showBranch = true;
+      showContextWindow = true;
+      showQuota = false;
+      showAiUsed = true;
+      showAgent = true;
+      showCodeChanges = true;
+      showUsername = true;
+      showSandbox = true;
+      showYolo = true;
+      showCiStatus = false;
+      showSchedules = false;
+      showPullRequest = true;
+      showCustom = true;
+    };
+    dynamicRetrieval = {
+      skills = true;
+      mcp = true;
+    };
+    voice = {
+      enabled = false;
+      selectedModel = "nemotron-3.5-asr-streaming-0.6b-generic-cpu:3";
+    };
+    tabs.enabled = true;
+    subagents.agents = {
+      research = {
+        effortLevel = "max";
+        contextTier = "long_context";
+        model = "gpt-6-astra";
+      };
+      code-review = {
+        model = "gpt-6-astra";
+        effortLevel = "xhigh";
+        contextTier = "long_context";
+      };
+      security-review.model = "complementary";
+      explore = {
+        model = "gpt-6-astra";
+        effortLevel = "low";
+        contextTier = "long_context";
+      };
+      task = {
+        model = "gpt-5.6-terra";
+        effortLevel = "medium";
+        contextTier = "long_context";
+      };
+    };
+    experimental = true;
+    memory = true;
+  };
+  copilotNixSettings =
+    (pkgs.formats.json { }).generate "copilot-settings.json"
+      (lib.recursiveUpdate copilotSharedSettings
+        config.programs.github-copilot-cli.extraSettings);
 in
 {
   options.programs.claude-code.extraSettings = lib.mkOption {
@@ -83,6 +163,17 @@ in
       Host-specific Claude Code settings merged on top of the shared
       programs.claude-code.settings during activation. Use this for settings
       that should not apply to every host (e.g. work-specific marketplaces).
+    '';
+  };
+
+  options.programs.github-copilot-cli.extraSettings = lib.mkOption {
+    type = lib.types.attrsOf lib.types.anything;
+    default = { };
+    description = ''
+      Host-specific Copilot CLI settings merged on top of the shared
+      settings baked into modules/home-manager/llm during activation. Use
+      this for settings that should not apply to every host (e.g.
+      work-specific marketplaces).
     '';
   };
 
@@ -98,10 +189,6 @@ in
       # module, so it can't opt into the shared MCP servers via
       # enableMcpIntegration. Configure MCP for it manually if needed.
       agents.pi
-
-      # copilot-cli: GitHub Copilot in the terminal. No home-manager module
-      # in 26.05, so installed as a bare package (no MCP integration).
-      agents.copilot-cli
 
       # ai: one-shot terminal prompt wrapping `claude -p` (reuses its login,
       # MCP off, terse output). Lives here alongside the agent CLIs it shells out to.
@@ -174,6 +261,24 @@ in
       settings.approval_policy = "on-request";
     };
 
+    programs.github-copilot-cli = {
+      enable = true;
+      package = agents.copilot-cli;
+
+      enableMcpIntegration = true;
+
+      # Deliberately NOT using programs.github-copilot-cli.settings here: as
+      # of home-manager 26.05 (and current master) that option is written to
+      # config.json, but the CLI moved user settings to settings.json —
+      # config.json is now "automatically managed application state"
+      # (auth, installed-plugin metadata, firstLaunchAt, ...). See
+      # https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-config-dir-reference.
+      # Symlinking our settings over config.json would blow away
+      # lastLoggedInUser/loggedInUsers on every switch, forcing a re-login.
+      # Our own mutable-merge into settings.json below (mirroring
+      # claude-code/codex) is the correct target until upstream fixes this.
+    };
+
     # gemini-cli was renamed upstream to antigravity-cli (Google rebrand).
     programs.antigravity-cli = {
       enable = true;
@@ -244,6 +349,22 @@ in
       nixFile = config.home.file.".codex/config.toml".source;
       liveFile = "${config.home.homeDirectory}/.codex/config.toml";
       mergeCmd = yqTomlMerge;
+    };
+
+    # Nix-managed Copilot CLI settings.json, merged with host-specific
+    # extraSettings during activation (see copilotNixSettings above).
+    # No mkForce false needed for the module's own config.json symlink: we
+    # never set programs.github-copilot-cli.settings, so it stays unwritten.
+    #
+    # Deliberately excluded (left for Copilot's own /theme and /plugin UI
+    # commands — including them would silently revert user choices):
+    #   theme, enabledPlugins
+    home.activation.mergeCopilotSettings = mkMutableMerge {
+      label = "copilot settings.json";
+      nixFile = copilotNixSettings;
+      liveFile = "${config.programs.github-copilot-cli.configDir}/settings.json";
+      mergeCmd = jqMerge;
+      diffCmd = jqDiff;
     };
   };
 }
