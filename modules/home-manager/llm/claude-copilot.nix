@@ -77,7 +77,20 @@ let
         # (Nix handles those) and feature-flag fetching, including Remote
         # Control.
         CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
-      };
+        # List the gateway's models under "From gateway" in /model. Claude
+        # Code only keeps the claude-* ones (e.g. Opus 4.8, Sonnet 5.5).
+        CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1";
+      }
+      # One extra /model entry for a non-Claude model. Other ones still work
+      # by typing their ID: /model gpt-5.6-sol.
+      // lib.optionalAttrs (cfg.customModel != null) (
+        {
+          ANTHROPIC_CUSTOM_MODEL_OPTION = cfg.customModel.id;
+        }
+        // lib.optionalAttrs (cfg.customModel.name != null) {
+          ANTHROPIC_CUSTOM_MODEL_OPTION_NAME = cfg.customModel.name;
+        }
+      );
     };
   settingsFile = (pkgs.formats.json { }).generate "claude-copilot-settings.json" settings;
 
@@ -138,6 +151,27 @@ in
         fable = "claude-fable-5-1";
       };
       description = "Copilot model IDs for Claude Code's opus/sonnet/haiku/fable aliases.";
+    };
+
+    # Non-Claude models (GPT, Gemini, Grok) work through the gateway too, but
+    # Claude Code doesn't know their context window and assumes the Claude
+    # default for compaction.
+    customModel = lib.mkOption {
+      type = lib.types.nullOr (lib.types.submodule {
+        options = {
+          id = lib.mkOption {
+            type = lib.types.str;
+            description = "Gateway model ID, e.g. gpt-6.1-sol.";
+          };
+          name = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Display name in /model.";
+          };
+        };
+      });
+      default = null;
+      description = "Extra non-Claude model to list in Claude Code's /model picker.";
     };
   };
 
