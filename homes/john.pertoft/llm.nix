@@ -44,10 +44,10 @@ in
   # modules/home-manager/llm/claude-copilot.nix.
   programs.claude-copilot = {
     enable = true;
-    customModel = {
-      id = "gpt-6.1-sol";
-      name = "GPT-6.1 Sol";
-    };
+    extraModels = [
+      { model = "gpt-6.1-sol"; label = "GPT-6.1 Sol"; }
+      { model = "gpt-5.6-sol"; label = "GPT-5.6 Sol"; }
+    ];
   };
 
   # Work-specific Claude Code settings merged on top of the shared settings

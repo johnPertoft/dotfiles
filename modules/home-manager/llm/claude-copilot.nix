@@ -81,17 +81,21 @@ let
         # Code only keeps the claude-* ones (e.g. Opus 4.8, Sonnet 5.5).
         CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1";
       }
-      # One extra /model entry for a non-Claude model. Other ones still work
-      # by typing their ID: /model gpt-5.6-sol.
-      // lib.optionalAttrs (cfg.customModel != null) (
-        {
-          ANTHROPIC_CUSTOM_MODEL_OPTION = cfg.customModel.id;
-        }
-        // lib.optionalAttrs (cfg.customModel.name != null) {
-          ANTHROPIC_CUSTOM_MODEL_OPTION_NAME = cfg.customModel.name;
-        }
-      );
-    };
+      # Claude Code doesn't know the context window of non-Claude models and
+      # otherwise compacts them at 200k. This only applies to models it
+      # doesn't recognise; Claude models keep their real windows.
+      // lib.optionalAttrs (cfg.nonClaudeContextTokens != null) {
+        CLAUDE_CODE_MAX_CONTEXT_TOKENS = toString cfg.nonClaudeContextTokens;
+      };
+    }
+  # Extra /model rows for non-Claude models, after the built-in and
+  # gateway-discovered ones. Other models still work by typing their ID:
+  # /model grok-4.7.
+  // lib.optionalAttrs (cfg.extraModels != [ ]) {
+    modelPicker.options = map
+      (m: { inherit (m) model; } // lib.optionalAttrs (m.label != null) { inherit (m) label; })
+      cfg.extraModels;
+  };
   settingsFile = (pkgs.formats.json { }).generate "claude-copilot-settings.json" settings;
 
   claude-copilot = pkgs.writeShellApplication {
@@ -153,25 +157,33 @@ in
       description = "Copilot model IDs for Claude Code's opus/sonnet/haiku/fable aliases.";
     };
 
-    # Non-Claude models (GPT, Gemini, Grok) work through the gateway too, but
-    # Claude Code doesn't know their context window and assumes the Claude
-    # default for compaction.
-    customModel = lib.mkOption {
-      type = lib.types.nullOr (lib.types.submodule {
+    # Non-Claude models (GPT, Gemini, Grok) work through the gateway too.
+    extraModels = lib.mkOption {
+      type = lib.types.listOf (lib.types.submodule {
         options = {
-          id = lib.mkOption {
+          model = lib.mkOption {
             type = lib.types.str;
             description = "Gateway model ID, e.g. gpt-6.1-sol.";
           };
-          name = lib.mkOption {
+          label = lib.mkOption {
             type = lib.types.nullOr lib.types.str;
             default = null;
-            description = "Display name in /model.";
+            description = "Row title in /model. Defaults to the model ID.";
           };
         };
       });
-      default = null;
-      description = "Extra non-Claude model to list in Claude Code's /model picker.";
+      default = [ ];
+      description = "Non-Claude models to add to Claude Code's /model picker.";
+    };
+
+    # Max input tokens Copilot accepts (from the gateway's /v1/models): 922k
+    # for GPT-5.4 to 6.1 Sol, more for Gemini Flash. Smaller-window models
+    # used by ID (GPT-6 Sol 872k, Grok 4.x 372k, GPT-5.3 Codex 272k) hit the
+    # API limit before Claude Code compacts; it then compacts after the error.
+    nonClaudeContextTokens = lib.mkOption {
+      type = lib.types.nullOr lib.types.ints.positive;
+      default = 922000;
+      description = "Context window Claude Code assumes for non-Claude models.";
     };
   };
 
