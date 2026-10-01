@@ -39,6 +39,11 @@ in
     # ];
   };
 
+  # `claude-copilot`: Claude Code on the work GitHub Copilot seat via the
+  # local copilot-api gateway. Setup steps are in
+  # modules/home-manager/llm/claude-copilot.nix.
+  programs.claude-copilot.enable = true;
+
   # Work-specific Claude Code settings merged on top of the shared settings
   # defined in modules/home-manager/llm. The shared module's activation script
   # picks these up at eval time via config.programs.claude-code.extraSettings.
