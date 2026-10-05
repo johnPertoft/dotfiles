@@ -62,8 +62,14 @@ in
     devices = [ "nvidia.com/gpu=all" ];
     extraOptions = [ "--ulimit=memlock=-1" ];
     environment = {
+      # Expert-pruned coding version: ~32 GB RAM, ~55 tok/s on the 5070.
       FAMILY = "coder";
       MODEL = "IQ1_M";
+      # The full model (125B + 51B n-gram embedding + 4B MTP, the "180B" on
+      # Hugging Face). Upstream's pick for 64 GB RAM: ~79 tok/s on the 5070.
+      # Q2_0 is faster (~94 tok/s), IQ3_XXS slower but a bit better.
+      # FAMILY = "qwen";
+      # MODEL = "IQ2_XS";
     };
   };
 
