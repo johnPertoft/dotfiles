@@ -9,5 +9,6 @@ nixpkgs.lib.nixosSystem {
     self.nixosModules.cuda
     self.nixosModules.desktop
     self.nixosModules.gaming
+    self.nixosModules.strata
   ];
 }
