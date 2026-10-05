@@ -14,6 +14,10 @@
 #   3. Run `codex-copilot`, then `/status`: the provider should be
 #      copilot_api. Pick a model with `/model`; the list comes from the
 #      gateway. Don't sign in to ChatGPT in this home.
+#   4. Check auto review: ask it to run `/usr/bin/printf GUARDIAN_TEST_OK`
+#      with sandbox escalation (sandbox_permissions=require_escalated). It
+#      should be approved by the reviewer without asking you. If it errors
+#      instead, check the mapping in ~/.local/share/copilot-api/config.json.
 #
 # Skills are shared: ~/.codex-copilot/skills links to ~/.codex/skills.
 { pkgs
@@ -36,6 +40,20 @@ let
   # Gateway provider settings, from copilot-api's Codex guide.
   overlay = (pkgs.formats.toml { }).generate "codex-copilot-overlay.toml" {
     model_provider = "copilot_api";
+    # Let a model review escalation requests ("Approve for me") instead of
+    # asking every time, like auto mode in claude-copilot. Codex asks for
+    # `codex-auto-review`, which Copilot doesn't serve over Responses; the
+    # gateway maps it below.
+    approvals_reviewer = "auto_review";
+    # Codex's default (cached) search mode never reaches a real search
+    # through the gateway; live mode does, using the native web.run tool.
+    web_search = "live";
+    features.standalone_web_search = true;
+    # standalone_web_search is marked under development; skip the warning
+    # Codex prints for it on every start.
+    suppress_unstable_features_warning = true;
+    # Usage analytics would go to OpenAI, which this home doesn't use.
+    analytics.enabled = false;
     # Codex 0.156+ fails to use the model list it discovers from a custom
     # provider, so point it at a local catalog. The launcher refreshes it
     # from the gateway on every start.
@@ -105,7 +123,11 @@ in
     lib.mkEnableOption "the codex-copilot launcher (and the copilot-api gateway it uses)";
 
   config = lib.mkIf cfg.enable {
-    programs.copilot-api.enable = true;
+    programs.copilot-api = {
+      enable = true;
+      # Model for the auto reviewer (approvals_reviewer above).
+      modelMappings.codex-auto-review = lib.mkDefault "gpt-5.6-terra";
+    };
 
     home.packages = [ codex-copilot ];
 
