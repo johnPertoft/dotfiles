@@ -30,9 +30,14 @@ let
         config.programs.claude-code.extraSettings);
 in
 {
-  # Opt-in `claude-copilot` launcher: the same Claude Code, routed through a
-  # GitHub Copilot subscription. Enabled per home (see homes/john.pertoft).
-  imports = [ ./claude-copilot.nix ];
+  # Opt-in `claude-copilot` and `codex-copilot` launchers: the same Claude
+  # Code and Codex, routed through a GitHub Copilot subscription by the shared
+  # copilot-api gateway. Enabled per home (see homes/john.pertoft).
+  imports = [
+    ./copilot-api.nix
+    ./claude-copilot.nix
+    ./codex-copilot.nix
+  ];
 
   options.programs.claude-code.extraSettings = lib.mkOption {
     type = lib.types.attrsOf lib.types.anything;

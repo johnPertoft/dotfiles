@@ -51,5 +51,8 @@
 
   # yq-based merge for TOML config files.
   # fi==0 = nix (first arg), fi==1 = live (second arg); right side (*) wins.
-  yqTomlMerge = "${lib.getExe pkgs.yq-go} ea --input-format=toml --output-format=toml 'select(fi==1) * select(fi==0)'";
+  # yq appends keys new to the live file at the end, and in TOML a plain key
+  # after a [table] header belongs to that table. So within every table, sort
+  # plain values ahead of subtables (stable, comments kept).
+  yqTomlMerge = "${lib.getExe pkgs.yq-go} ea --input-format=toml --output-format=toml 'select(fi==1) * select(fi==0) | (.. | select(kind == \"map\")) |= (to_entries | sort_by(.value | kind == \"map\") | from_entries)'";
 }
