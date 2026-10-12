@@ -39,6 +39,17 @@ in
     # ];
   };
 
+  # `claude-copilot`: Claude Code on the work GitHub Copilot seat via the
+  # local copilot-api gateway. Setup steps are in
+  # modules/home-manager/llm/claude-copilot.nix.
+  programs.claude-copilot = {
+    enable = true;
+    extraModels = [
+      { model = "gpt-6.1-sol"; label = "GPT-6.1 Sol"; }
+      { model = "gpt-5.6-sol"; label = "GPT-5.6 Sol"; }
+    ];
+  };
+
   # Work-specific Claude Code settings merged on top of the shared settings
   # defined in modules/home-manager/llm. The shared module's activation script
   # picks these up at eval time via config.programs.claude-code.extraSettings.
