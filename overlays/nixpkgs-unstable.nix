@@ -4,6 +4,7 @@ final: prev:
 let
   pkgs = import nixpkgs-unstable {
     system = prev.stdenv.hostPlatform.system;
+    overlays = [ (import ./debugpy-no-tests-darwin.nix) ];
     config.allowUnfreePredicate =
       pkg:
       builtins.elem (nixpkgs-unstable.lib.getName pkg) [
