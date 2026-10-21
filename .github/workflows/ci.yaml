@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       publish_cache:
-        description: Publish selected expensive Linux builds to Cachix
+        description: Publish selected expensive builds to Cachix
         type: boolean
         default: false
       minimum_build_seconds:
@@ -61,27 +61,21 @@ jobs:
           - name: ThinkCentre system
             attr: nixosConfigurations.thinkcentre.config.system.build.toplevel
             runner: ubuntu-24.04
-            publish: true
           - name: Pi system
             attr: nixosConfigurations.pi.config.system.build.toplevel
             runner: ubuntu-24.04-arm
-            publish: true
           - name: Desktop system
             attr: nixosConfigurations.home-desktop.config.system.build.toplevel
             runner: ubuntu-24.04
-            publish: true
           - name: Desktop home
             attr: legacyPackages.x86_64-linux.homeConfigurations.john.activationPackage
             runner: ubuntu-24.04
-            publish: true
           - name: MacBook system
             attr: darwinConfigurations.STOLTM7XVQCG7.system
             runner: macos-15
-            publish: false
           - name: MacBook home
             attr: legacyPackages.aarch64-darwin.homeConfigurations."john.pertoft".activationPackage
             runner: macos-15
-            publish: false
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
@@ -91,9 +85,8 @@ jobs:
     env:
       BUILD_ATTR: ${{ matrix.attr }}
       PUBLISH_CACHE: >-
-        ${{ matrix.publish &&
-            ((github.event_name == 'workflow_dispatch' && inputs.publish_cache) ||
-             (github.event_name == 'push' && github.ref == 'refs/heads/main')) }}
+        ${{ (github.event_name == 'workflow_dispatch' && inputs.publish_cache) ||
+            (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
       CACHE_MIN_SECONDS: >-
         ${{ github.event_name == 'workflow_dispatch' &&
             format('{0}', inputs.minimum_build_seconds) || '300' }}
@@ -136,18 +129,12 @@ jobs:
 
       - name: Build configuration
         run: |
-          if [ "${{ matrix.publish }}" = "true" ]; then
-            python3 .github/scripts/cache_builds.py build \
-              --directory "$RUNNER_TEMP/selective-cache" -- \
-              nix build --out-link result --json --print-build-logs \
-              --max-jobs 2 --cores 2 --builders "" ".#${BUILD_ATTR}"
-          else
+          python3 .github/scripts/cache_builds.py build \
+            --directory "$RUNNER_TEMP/selective-cache" -- \
             nix build --out-link result --json --print-build-logs \
-              --max-jobs 2 --cores 2 ".#${BUILD_ATTR}" > "$RUNNER_TEMP/build-result.json"
-          fi
+            --max-jobs 2 --cores 2 --builders "" ".#${BUILD_ATTR}"
 
       - name: Select expensive builds within the upload budget
-        if: matrix.publish
         run: |
           python3 .github/scripts/cache_builds.py select \
             --directory "$RUNNER_TEMP/selective-cache" --cache johnpertoft \
@@ -167,7 +154,7 @@ jobs:
           fi
 
       - name: Save cache selection report
-        if: always() && matrix.publish
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cache-report-${{ matrix.name }}

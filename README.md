@@ -65,7 +65,7 @@ runners without emulation.
 
 The Pi job builds its NixOS system closure, not an SD image, and does not deploy
 or boot it. There is no Pi-specific Home Manager configuration in this matrix.
-It uses the same selective publication policy as the other Linux targets.
+It uses the same selective publication policy as the other targets.
 
 CI uses the Nix installer and Cachix actions. There are no custom
 actions or change-detection scripts. Each target is requested on every build run,
@@ -84,7 +84,7 @@ same ref, without publication when outside `main`. No additional token is needed
 
 ### Selective binary caching
 
-The Linux jobs record successful, actually executed derivations using
+Every build job records successful, actually executed derivations using
 Determinate Nix's local build-events API. Downloaded/substituted paths are not
 candidates. CI uses the recorded execution duration, not the time spent waiting
 for a build slot, downloading dependencies, or evaluating the flake.
@@ -112,9 +112,9 @@ the budget. A locally compiled package with a large uncached CUDA closure can
 therefore be skipped rather than filling the cache.
 
 Successful CI builds from **main pushes and weekly updates publish selected
-Linux outputs automatically**. Other manual runs publish only with
-`publish_cache=true`. Pull requests only run checks, and non-main branch pushes
-do not trigger CI. MacBook jobs remain read-only. Every successful Linux
+outputs automatically**, for both Linux and macOS targets. Other manual runs
+publish only with `publish_cache=true`. Pull requests only run checks, and
+non-main branch pushes do not trigger CI. Every successful
 build reports selected/skipped candidates in its job summary, with detailed
 JSON and the selected output paths retained as a seven-day Actions artifact.
 No eligible candidates is a valid result and uploads nothing.

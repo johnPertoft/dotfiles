@@ -124,11 +124,11 @@ It does not activate the configuration or require an online ThinkCentre.
 
 Builds can read from `https://johnpertoft.cachix.org`; the shared Nix settings
 also configure this cache and its public signing key for the hosts. Successful
-CI builds from main pushes and weekly updates publish selected expensive Linux
+CI builds from main pushes and weekly updates publish selected expensive
 packages. Other manual runs publish only when explicitly enabled; pull requests
 do not publish.
 
-To publish selected packages from Linux system and desktop Home Manager builds, create a
+To publish selected packages from the system and Home Manager builds, create a
 Cachix write token scoped to `johnpertoft` and store it as the **repository Actions secret**
 `CACHIX_AUTH_TOKEN` (not an environment secret or a file in this repository).
 Then manually run the workflow with `publish_cache` enabled:
@@ -147,7 +147,6 @@ against these budgets unless already present in the destination or official
 NixOS cache. These uncompressed budgets are not the Cachix storage quota.
 No pins are created; normal Cachix garbage collection applies. Public uploads
 require redistribution permission for the selected packages and dependencies.
-The MacBook matrix targets are built but are not published.
 
 ## Outstanding TODOs / cutover work (all deferred)
 
