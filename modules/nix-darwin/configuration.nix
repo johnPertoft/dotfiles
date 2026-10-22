@@ -10,6 +10,22 @@
     enableSyntaxHighlighting = true;
   };
 
+  # Needed in addition to home-manager's `programs.fish.enable`: that one only
+  # writes ~/.config/fish, while this puts fish in the *system* profile so
+  # /run/current-system/sw/bin/fish exists — which is the path environment.shells
+  # below points at.
+  programs.fish.enable = true;
+
+  # Add fish to /etc/shells so `chsh` accepts it. The seven default macOS
+  # shells are preserved automatically by nix-darwin, so this only appends.
+  #
+  # Selecting the login shell stays manual, once per machine:
+  #   chsh -s /run/current-system/sw/bin/fish
+  # The declarative users.users.<name>.shell isn't used because its activation
+  # is gated on users.knownUsers, and that option is documented as being for
+  # accounts nix-darwin may freely create and delete.
+  environment.shells = with pkgs; [ fish ];
+
   # System packages — most user-facing tools live in home-manager.
   environment.systemPackages = with pkgs; [
     clang
