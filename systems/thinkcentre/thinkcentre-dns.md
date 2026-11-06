@@ -254,22 +254,67 @@ Default behaviour already fits: macOS takes DNS from the joined network, so
 
 ### Optional: Blocky away from home
 
-Tailscale admin console → DNS → global nameservers = the ThinkCentre's and
-Pi's **tailnet IPs**, with "Override local DNS". Every tailnet device then uses
-Blocky anywhere. Costs: they all depend on home being up (both boxes down →
-no DNS while Tailscale is connected), and it applies to the work laptop too
-unless it's on a separate tailnet. Only once the DNS setup is stable.
+Tailscale can point every tailnet device's DNS at Blocky.
+
+**Setup** — admin console → **DNS → Nameservers → Add nameserver → Custom**:
+
+1. Add the ThinkCentre's and Pi's **tailnet IPs** (`tailscale ip -4` on each),
+   not the LAN `.2`/`.3`/`.4` — a phone on mobile data only reaches them over
+   the tailnet.
+2. Enable **"Override DNS servers"** (older UI: "Override local DNS"), or
+   devices keep their local DNS for normal lookups.
+
+No server-side change: Blocky listens on all addresses and `tailscale0` is
+trusted on both hosts.
+
+**Path on a device:**
+
+```
+app → 100.100.100.100 (tailscaled's DNS proxy)
+        ├─ *.ts.net / tailnet names → answered locally
+        └─ everything else → over the tailnet → Blocky (ThinkCentre or Pi)
+```
+
+Works on any network while Tailscale is connected, and Blocky sees each
+device's own tailnet IP (per-device query logs).
+
+**Possibly a better fallback than DHCP**: here tailscaled, not each device's
+OS, picks how to use the list. If (as I understand it) it queries the servers
+with small staggered delays and takes the first answer, listing
+**ThinkCentre, Pi, `1.1.1.1`** gives ad blocking while a Blocky is healthy and
+`1.1.1.1` after a short delay when both are down — close to the strict-order
+fallback the router can't do. **Unverified — test it**: stop both Blockys and
+check lookups still resolve; restart and check ad domains return `0.0.0.0`.
+A race may also let some queries reach `1.1.1.1` while Blocky is up.
+
+**Alongside it:**
+
+- **Work laptop opts out**: `tailscale set --accept-dns=false` (mobile apps:
+  "Use Tailscale DNS" toggle). It keeps company/local DNS but stops resolving
+  tailnet names automatically — use `100.x` addresses there.
+- **Servers opt out too**: otherwise Tailscale rewrites the ThinkCentre's and
+  Pi's `/etc/resolv.conf` to `100.100.100.100` (→ Blocky), overriding their
+  deliberate `nameservers = [ "1.1.1.1" … ]`; a broken Blocky would then take
+  out the server's own DNS. In NixOS:
+  `services.tailscale.extraSetFlags = [ "--accept-dns=false" ];`
+- **Dependency**: every Tailscale-connected device depends on home machines and
+  home internet for DNS. Without a public fallback in the list, home offline →
+  no DNS until Tailscale is turned off. Only once the DNS setup is stable.
+
+**Combined with the router setup**: router DHCP → `.4` covers devices without
+Tailscale (TV, guests); Tailscale nameservers → Blocky covers own devices
+everywhere. Both paths end at Blocky.
 
 ### Summary
 
-| Device         | Setup                                          | Watch out for                                                |
-| -------------- | ---------------------------------------------- | ------------------------------------------------------------ |
-| Desktop        | Nothing (DHCP)                                 | Tailscale owns `resolv.conf`; verify with the commands above |
-| Work laptop    | Nothing                                        | Company DNS wins; no "Override local DNS" on its tailnet     |
-| iPhone/iPad    | Nothing; DNS on _Automatic_                    | Private Relay in Safari                                      |
-| Android        | Private DNS on _Automatic_                     | A Private DNS hostname bypasses Blocky                       |
-| TV             | Nothing; manual `.4` only if needed            | Hardcoded `8.8.8.8`; in-app ads unblockable                  |
-| Away from home | Optional Tailscale global nameservers → Blocky | All tailnet devices then depend on home being up             |
+| Device         | Setup                                                 | Watch out for                                                |
+| -------------- | ----------------------------------------------------- | ------------------------------------------------------------ |
+| Desktop        | Nothing (DHCP)                                        | Tailscale owns `resolv.conf`; verify with the commands above |
+| Work laptop    | Nothing                                               | Company DNS wins; no "Override local DNS" on its tailnet     |
+| iPhone/iPad    | Nothing; DNS on _Automatic_                           | Private Relay in Safari                                      |
+| Android        | Private DNS on _Automatic_                            | A Private DNS hostname bypasses Blocky                       |
+| TV             | Nothing; manual `.4` only if needed                   | Hardcoded `8.8.8.8`; in-app ads unblockable                  |
+| Away from home | Optional Tailscale nameservers → Blocky (+ `1.1.1.1`) | Depends on home being up; servers and work laptop opt out    |
 
 ## Suggested order
 
@@ -279,5 +324,6 @@ unless it's on a separate tailnet. Only once the DNS setup is stable.
 3. Later: keepalived floating IP (option C) and the failover drill.
 4. If a router upgrade happens: OpenWrt for port-53 redirect and strict-order
    fallback (option D).
-5. Optional, once stable: Tailscale global nameservers → Blocky for phone/iPad
-   away from home.
+5. Optional, once stable: Tailscale nameservers → ThinkCentre, Pi, `1.1.1.1`
+   with override; opt out the servers and work laptop (`--accept-dns=false`);
+   test the both-down fallback.
