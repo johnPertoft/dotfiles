@@ -177,6 +177,100 @@ Verify option names against the nixpkgs version in use.
    `wlan0` within seconds; the loop keeps answering after a brief gap.
 4. Start Blocky again; watch `.4` move back.
 
+## 4. Client devices
+
+Assumes router DHCP hands out `192.168.0.4` (virtual or not). Any device that
+takes DNS from DHCP then uses Blocky at home and the local network's DNS
+elsewhere — no per-device config. The per-device work is mostly checking for
+things that bypass DHCP.
+
+### Desktop (`systems/home-desktop`)
+
+From the repo: NetworkManager (`modules/nixos/desktop.nix`),
+`networking.useDHCP = true`, no systemd-resolved, no `networking.nameservers`,
+Avahi with `nssmdns4`, Tailscale enabled. Lookup path, roughly:
+
+```
+app → glibc (via NixOS's nscd cache)
+    → /etc/nsswitch.conf hosts: files → mdns4_minimal (*.local via Avahi) → dns
+    → /etc/resolv.conf  (resolvconf, from NetworkManager's DHCP DNS)
+```
+
+Tailscale probably sits in the middle: unless "use Tailscale DNS" is off,
+tailscaled rewrites `/etc/resolv.conf` to `nameserver 100.100.100.100`, answers
+tailnet names itself, and forwards everything else to the DNS it saw before
+(the DHCP servers). So likely: app → `100.100.100.100` → DHCP DNS (→ Blocky).
+Not verified on the machine; check with:
+
+```sh
+cat /etc/resolv.conf            # 100.100.100.100 → Tailscale manages it
+tailscale dns status            # what Tailscale forwards to
+nmcli dev show | grep -i dns    # what DHCP handed NetworkManager
+resolvconf -l                   # what resolvconf merged
+getent hosts doubleclick.net    # full NSS path; 0.0.0.0 once Blocky is in use
+```
+
+Config options:
+
+| Approach                                      | Effect                                                    | Trade-off                                          |
+| --------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| Nothing                                       | Follows the router                                        | Router changes apply automatically. **Preferred.** |
+| `networking.nameservers = [ "192.168.0.4" ];` | Added ahead of DHCP servers via resolvconf (verify merge) | Declared in config, but DNS defined in two places  |
+| NM profile with `ignore-auto-dns` + `.4`      | Only `.4`, DHCP ignored                                   | No fallback if `.4` is down                        |
+
+### Work laptop (`systems/STOLTM7XVQCG7`, macOS)
+
+Default behaviour already fits: macOS takes DNS from the joined network, so
+`.4` at home and the local DNS elsewhere. Caveats:
+
+- Company VPN / security agents / managed DNS or DoH profiles may force DNS
+  through the company. Then Blocky isn't used at home — expected; don't
+  override a managed device's DNS (breaks internal names, may violate policy).
+- Tailscale with default DNS settings only sends `*.ts.net` to
+  `100.100.100.100`. Keep "Override local DNS" **off** for any tailnet this
+  laptop is on.
+- Inspect with `scutil --dns`.
+
+### Phone, iPad
+
+- **iOS/iPadOS**: DHCP gives `.4` at home. Keep Wi-Fi → (i) → Configure DNS on
+  _Automatic_. iCloud Private Relay (Safari) does its own DNS — can be turned
+  off per Wi-Fi network. DNS profiles / VPN apps change the path.
+- **Android**: Private DNS on _Automatic_ (tries DoT to the DHCP server, falls
+  back to plain DNS). A Private DNS hostname (e.g. `dns.google`) bypasses
+  Blocky.
+- **Tailscale on mobile**: while connected, all DNS goes via
+  `100.100.100.100`, which (with no global nameservers configured) forwards to
+  the current network's DNS — Blocky at home, normal elsewhere.
+
+### TV
+
+- DHCP gives `.4`; set it manually only if Blocky doesn't see queries from the
+  TV's IP (query log/metrics).
+- Google/Android TVs and Chromecasts sometimes hardcode `8.8.8.8` — only an
+  OpenWrt-style port-53 redirect fixes that.
+- DNS blocking handles maker/home-screen ads and telemetry, **not**
+  YouTube/streaming in-app ads (same domains as the content).
+
+### Optional: Blocky away from home
+
+Tailscale admin console → DNS → global nameservers = the ThinkCentre's and
+Pi's **tailnet IPs**, with "Override local DNS". Every tailnet device then uses
+Blocky anywhere. Costs: they all depend on home being up (both boxes down →
+no DNS while Tailscale is connected), and it applies to the work laptop too
+unless it's on a separate tailnet. Only once the DNS setup is stable.
+
+### Summary
+
+| Device         | Setup                                          | Watch out for                                                |
+| -------------- | ---------------------------------------------- | ------------------------------------------------------------ |
+| Desktop        | Nothing (DHCP)                                 | Tailscale owns `resolv.conf`; verify with the commands above |
+| Work laptop    | Nothing                                        | Company DNS wins; no "Override local DNS" on its tailnet     |
+| iPhone/iPad    | Nothing; DNS on _Automatic_                    | Private Relay in Safari                                      |
+| Android        | Private DNS on _Automatic_                     | A Private DNS hostname bypasses Blocky                       |
+| TV             | Nothing; manual `.4` only if needed            | Hardcoded `8.8.8.8`; in-app ads unblockable                  |
+| Away from home | Optional Tailscale global nameservers → Blocky | All tailnet devices then depend on home being up             |
+
 ## Suggested order
 
 1. Shared Blocky module for both hosts; add a second upstream.
@@ -185,3 +279,5 @@ Verify option names against the nixpkgs version in use.
 3. Later: keepalived floating IP (option C) and the failover drill.
 4. If a router upgrade happens: OpenWrt for port-53 redirect and strict-order
    fallback (option D).
+5. Optional, once stable: Tailscale global nameservers → Blocky for phone/iPad
+   away from home.
