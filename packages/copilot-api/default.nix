@@ -29,11 +29,11 @@
 #   3. Set `npmDepsHash` to lib.fakeHash, build, paste the real hash.
 buildNpmPackage rec {
   pname = "copilot-api";
-  version = "2.6.23";
+  version = "2.9.16";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/@jeffreycao/copilot-api/-/copilot-api-${version}.tgz";
-    hash = "sha256-rR8hRCz+W3jTIYrd3kFaWx0g2Li8vMmbfQ+4kpkcHCg=";
+    hash = "sha256-SA2xFyhmXcee/3tckZ873e7GFVPdxOMd0lUBhErSG/w=";
   };
   sourceRoot = "package";
 
@@ -45,7 +45,7 @@ buildNpmPackage rec {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-k267OeTPNpJOsFtZkf3QBQdWuKzWS7xCI5dm+pvFrR0=";
+  npmDepsHash = "sha256-gQ6HlVBaerPveufEZZpohvh0v/Jw0M+DuxQjgBuJGfw=";
 
   nodejs = nodejs_22;
 
